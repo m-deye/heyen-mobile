@@ -74,11 +74,20 @@ lib/
 
 ---
 
+## Le dépôt GitHub n’est pas l’application
+
+Ouvrir https://github.com/m-deye/heyen-mobile affiche le **code source**, pas l’app en cours d’exécution.  
+Pour voir les écrans comme sur ton téléphone, il faut **cloner le projet et lancer Flutter** sur un émulateur ou un appareil.
+
+Le dépôt doit être **public** (ou le visiteur ajouté comme collaborateur) pour qu’il puisse le cloner.
+
+---
+
 ## Prérequis
 
 - **Flutter SDK** ≥ 3.11 ([installation](https://docs.flutter.dev/get-started/install))
 - **Dart SDK** ≥ 3.11 (inclus avec Flutter)
-- Un appareil Android/iOS ou un émulateur configuré
+- Un appareil Android/iOS **ou** un émulateur configuré (`flutter doctor` doit être OK)
 
 ---
 
@@ -92,23 +101,38 @@ cd heyen-mobile
 # 2. Installer les dépendances
 flutter pub get
 
-# 3. Lancer l'application
+# 3. Vérifier qu’un appareil / émulateur est détecté
+flutter devices
+
+# 4. Lancer l’application
 flutter run
 ```
 
-### Configurer l'URL de l'API backend
+### Ce que le visiteur verra
 
-L'application utilise une variable d'environnement pour l'URL du backend :
+En debug, l’app essaie d’abord l’API locale (`http://127.0.0.1:3000`, ou `http://10.0.2.2:3000` sur émulateur Android).
+
+- **Backend allumé** → mêmes produits / commandes que chez toi (données API).
+- **Backend éteint** → l’app bascule sur des **données de démo** (catégories, produits, connexion test). L’interface reste la même.
+
+Comptes de test (mode local / démo) :
+
+| Type | Téléphone | Mot de passe |
+|---|---|---|
+| Particulier | `12345678` | `123456` |
+| Commerçant | `87654321` | `123456` |
+
+### Configurer l’URL de l’API backend
 
 ```bash
-# Pointer vers votre API locale
+# Émulateur Android → API sur ta machine
 flutter run --dart-define=HEYN_API_BASE_URL=http://10.0.2.2:3000
 
-# Ou vers la production
-flutter run --dart-define=HEYN_API_BASE_URL=https://api.heyn.mr
+# iOS / Windows / Chrome → API locale
+flutter run --dart-define=HEYN_API_BASE_URL=http://127.0.0.1:3000
 ```
 
-> Sans cette variable, l'app fonctionne en **mode démo** avec des données mockées.
+Le backend est un projet séparé : [m-deye/heyen](https://github.com/m-deye/heyen). Sans lui, `flutter run` affiche quand même l’app avec les données de démo.
 
 ---
 
