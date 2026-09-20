@@ -569,7 +569,7 @@ class AppLocalizationsAr extends AppLocalizations {
   String get checkoutNotesHint => 'مثال: اتصل بي عند الوصول';
 
   @override
-  String get checkoutAddressHint => 'أدخل عنوانك';
+  String get checkoutAddressHint => 'الحي، الشارع، المبنى…';
 
   @override
   String get checkoutCompleteLocationError => 'أدخل عنوان التوصيل.';

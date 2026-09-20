@@ -578,7 +578,7 @@ class AppLocalizationsFr extends AppLocalizations {
   String get checkoutNotesHint => 'Exemple : appelez-moi à l\'arrivée';
 
   @override
-  String get checkoutAddressHint => 'Saisissez votre adresse';
+  String get checkoutAddressHint => 'Quartier, rue, immeuble…';
 
   @override
   String get checkoutCompleteLocationError =>

@@ -201,7 +201,7 @@
   "checkoutPaymentCashOnDelivery": "Payez le livreur à l'arrivée",
   "checkoutNotesTitle": "Notes au livreur",
   "checkoutNotesHint": "Exemple : appelez-moi à l'arrivée",
-  "checkoutAddressHint": "Saisissez votre adresse",
+  "checkoutAddressHint": "Quartier, rue, immeuble…",
   "checkoutCompleteLocationError": "Indiquez votre adresse de livraison.",
   "checkoutPhoneError": "Indiquez votre numéro de téléphone.",
   "checkoutPaymentMethodError": "Choisissez un mode de paiement.",

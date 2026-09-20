@@ -184,6 +184,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                         maxLines: 4,
                       ),
                     ),
+                    const SizedBox(height: 88),
                   ],
                 ),
               ),
@@ -696,10 +697,11 @@ class _DeliveryAddressCard extends StatelessWidget {
             controller: landmarkController,
             hintText: l10n.checkoutAddressHint,
             icon: Icons.location_on_outlined,
-            minLines: 2,
-            maxLines: 3,
+            minLines: 3,
+            maxLines: 4,
             keyboardType: TextInputType.streetAddress,
             textInputAction: TextInputAction.next,
+            textAlign: TextAlign.start,
             onChanged: (value) => onChanged(
               location.copyWith(
                 landmark: value,
@@ -982,6 +984,7 @@ class _CheckoutTextField extends StatelessWidget {
     this.textInputAction,
     this.minLines = 1,
     this.maxLines = 1,
+    this.textAlign = TextAlign.end,
   });
 
   final Key? fieldKey;
@@ -993,6 +996,7 @@ class _CheckoutTextField extends StatelessWidget {
   final TextInputAction? textInputAction;
   final int minLines;
   final int maxLines;
+  final TextAlign textAlign;
 
   @override
   Widget build(BuildContext context) {
@@ -1004,7 +1008,7 @@ class _CheckoutTextField extends StatelessWidget {
       textInputAction: textInputAction,
       minLines: minLines,
       maxLines: maxLines,
-      textAlign: TextAlign.end,
+      textAlign: textAlign,
       style: HeynTextStyles.bodyMedium.copyWith(
         color: AppColors.darkText,
         fontWeight: FontWeight.w600,
@@ -1051,14 +1055,20 @@ class _WalletBrandIcon extends StatelessWidget {
     final style = switch (method) {
       MobilePaymentMethod.bankily => (
         color: const Color(0xFFE87722),
-        mark: 'B',
+        icon: Icons.account_balance_wallet_rounded,
       ),
       MobilePaymentMethod.masrivi => (
         color: const Color(0xFF128A4B),
-        mark: 'M',
+        icon: Icons.account_balance_rounded,
       ),
-      MobilePaymentMethod.sedad => (color: const Color(0xFF1B4F9C), mark: 'S'),
-      MobilePaymentMethod.cash => (color: AppColors.primary, mark: ''),
+      MobilePaymentMethod.sedad => (
+        color: const Color(0xFF1B4F9C),
+        icon: Icons.phone_iphone_rounded,
+      ),
+      MobilePaymentMethod.cash => (
+        color: AppColors.primary,
+        icon: Icons.payments_rounded,
+      ),
     };
 
     return Container(
@@ -1069,16 +1079,7 @@ class _WalletBrandIcon extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       alignment: Alignment.center,
-      child: method == MobilePaymentMethod.cash
-          ? const Icon(Icons.payments_outlined, color: Colors.white, size: 24)
-          : Text(
-              style.mark,
-              style: HeynTextStyles.sectionTitle.copyWith(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.w900,
-              ),
-            ),
+      child: Icon(style.icon, color: Colors.white, size: 24),
     );
   }
 }

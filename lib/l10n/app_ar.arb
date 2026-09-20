@@ -201,7 +201,7 @@
   "checkoutPaymentCashOnDelivery": "ادفع للمندوب عند وصول الطلب",
   "checkoutNotesTitle": "ملاحظات للمندوب",
   "checkoutNotesHint": "مثال: اتصل بي عند الوصول",
-  "checkoutAddressHint": "أدخل عنوانك",
+  "checkoutAddressHint": "الحي، الشارع، المبنى…",
   "checkoutCompleteLocationError": "أدخل عنوان التوصيل.",
   "checkoutPhoneError": "أدخل رقم هاتفك.",
   "checkoutPaymentMethodError": "اختر وسيلة الدفع.",

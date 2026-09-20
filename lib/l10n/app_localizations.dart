@@ -1133,7 +1133,7 @@ abstract class AppLocalizations {
   /// No description provided for @checkoutAddressHint.
   ///
   /// In fr, this message translates to:
-  /// **'Saisissez votre adresse'**
+  /// **'Quartier, rue, immeuble…'**
   String get checkoutAddressHint;
 
   /// No description provided for @checkoutCompleteLocationError.
