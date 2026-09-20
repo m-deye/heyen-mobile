@@ -22,7 +22,7 @@ class HeynMedia {
       'jus' || 'eau' => 'assets/images/categories/boissons.png',
       'dattes' => 'assets/images/categories/fruits.png',
       'riz' || 'huile' => 'assets/images/categories/epicerie.png',
-      _ => 'assets/images/categories/boulangerie.png',
+      _ => 'assets/images/categories/epicerie.png',
     };
   }
 
