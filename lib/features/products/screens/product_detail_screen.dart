@@ -446,17 +446,14 @@ class _ProductHeroHeader extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          CustomPaint(
-            foregroundPainter: _SubtleStripePainter(),
-            child: ColoredBox(
-              color: AppColors.scaffoldBackground,
-              child: Center(
-                child: ProductHeroMedia(
-                  product: product,
-                  width: double.infinity,
-                  height: height * 0.68,
-                  fit: BoxFit.contain,
-                ),
+          ColoredBox(
+            color: AppColors.scaffoldBackground,
+            child: Center(
+              child: ProductHeroMedia(
+                product: product,
+                width: double.infinity,
+                height: height * 0.68,
+                fit: BoxFit.contain,
               ),
             ),
           ),
@@ -476,26 +473,6 @@ class _ProductHeroHeader extends StatelessWidget {
       ),
     );
   }
-}
-
-class _SubtleStripePainter extends CustomPainter {
-  @override
-  void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = AppColors.hatchGreen.withValues(alpha: 0.58)
-      ..strokeWidth = 3;
-    const spacing = 12.0;
-    for (var x = -size.height; x < size.width; x += spacing) {
-      canvas.drawLine(
-        Offset(x, size.height),
-        Offset(x + size.height, 0),
-        paint,
-      );
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
 }
 
 class _ProductInfoSection extends StatelessWidget {
