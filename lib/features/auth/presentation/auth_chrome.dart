@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/widgets/premium_logo.dart';
+import '../../../l10n/app_localizations.dart';
+import '../../../shared/localization/display_localizations.dart';
 import '../../../shared/models/client_type.dart';
 import '../../../theme/heyn_theme.dart';
 
@@ -93,11 +95,12 @@ class AuthClientTypeToggle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Row(
       children: [
         Expanded(
           child: _TypeChip(
-            label: 'Particulier',
+            label: ClientType.particulier.localizedLabel(l10n),
             icon: Icons.person_outline,
             selected: selected == ClientType.particulier,
             onTap: () => onSelected(ClientType.particulier),
@@ -106,7 +109,7 @@ class AuthClientTypeToggle extends StatelessWidget {
         const SizedBox(width: 8),
         Expanded(
           child: _TypeChip(
-            label: 'Commerçant',
+            label: ClientType.commercant.localizedLabel(l10n),
             icon: Icons.storefront_outlined,
             selected: selected == ClientType.commercant,
             onTap: () => onSelected(ClientType.commercant),
@@ -159,7 +162,9 @@ class _TypeChip extends StatelessWidget {
                 style: HeynTextStyles.bodyMedium.copyWith(
                   fontSize: 13,
                   fontWeight: FontWeight.w700,
-                  color: selected ? HeynColors.goldLight : HeynColors.nightPurple,
+                  color: selected
+                      ? HeynColors.goldLight
+                      : HeynColors.nightPurple,
                 ),
               ),
             ],

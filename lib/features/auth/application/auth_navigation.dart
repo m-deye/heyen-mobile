@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../l10n/app_localizations.dart';
 import '../../../shared/models/product.dart';
 import '../../cart/application/cart_controller.dart';
 import '../presentation/guest_auth_sheet.dart';
@@ -158,8 +159,9 @@ void _resumeAfterSheetAuth({
       context.go(destination);
       return;
     }
+    final l10n = AppLocalizations.of(context);
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${addProduct.name} ajouté au panier')),
+      SnackBar(content: Text(l10n.productAddedToCart(addProduct.name))),
     );
     return;
   }
@@ -178,13 +180,14 @@ void _addPendingProductToCart(WidgetRef ref) {
     return;
   }
 
-  ref.read(cartControllerProvider.notifier).addProduct(
-    intent!.product!,
-    quantity: intent.quantity,
-  );
-  ref.read(pendingAuthIntentProvider.notifier).remember(
-    PendingAuthIntent(redirect: intent.redirect, action: intent.action),
-  );
+  ref
+      .read(cartControllerProvider.notifier)
+      .addProduct(intent!.product!, quantity: intent.quantity);
+  ref
+      .read(pendingAuthIntentProvider.notifier)
+      .remember(
+        PendingAuthIntent(redirect: intent.redirect, action: intent.action),
+      );
 }
 
 void consumePendingAuthIntent(Ref ref) {
@@ -193,13 +196,14 @@ void consumePendingAuthIntent(Ref ref) {
     return;
   }
 
-  ref.read(cartControllerProvider.notifier).addProduct(
-    intent!.product!,
-    quantity: intent.quantity,
-  );
-  ref.read(pendingAuthIntentProvider.notifier).remember(
-    PendingAuthIntent(redirect: intent.redirect, action: intent.action),
-  );
+  ref
+      .read(cartControllerProvider.notifier)
+      .addProduct(intent!.product!, quantity: intent.quantity);
+  ref
+      .read(pendingAuthIntentProvider.notifier)
+      .remember(
+        PendingAuthIntent(redirect: intent.redirect, action: intent.action),
+      );
 }
 
 void onAuthStatusChanged(Ref ref, AuthStatus? previous, AuthStatus next) {
@@ -222,9 +226,7 @@ void completePostAuthNavigation(BuildContext context, WidgetRef ref) {
     GoRouterState.of(context).uri.queryParameters['redirect'],
   );
   final pending = ref.read(pendingAuthIntentProvider.notifier).take();
-  context.go(
-    queryRedirect ?? safePostAuthRedirect(pending?.redirect) ?? '/',
-  );
+  context.go(queryRedirect ?? safePostAuthRedirect(pending?.redirect) ?? '/');
 }
 
 void closeAuthWithoutLogin(BuildContext context, WidgetRef ref) {

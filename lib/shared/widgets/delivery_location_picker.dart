@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/geo/nouakchott_neighborhoods.dart';
 import '../../core/theme/app_colors.dart';
+import '../../l10n/app_localizations.dart';
 import '../../theme/heyn_theme.dart';
 import '../models/delivery_location.dart';
 
@@ -97,18 +98,18 @@ class _DeliveryLocationPickerState extends State<DeliveryLocationPicker> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Quartier et repère',
-          style: HeynTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w700),
+          l10n.deliveryLocationTitle,
+          style: HeynTextStyles.bodyMedium.copyWith(
+            fontWeight: FontWeight.w700,
+          ),
         ),
         const SizedBox(height: 6),
-        Text(
-          "Nouakchott n'a pas d'adressage formel fiable. Choisissez un quartier.",
-          style: HeynTextStyles.subtitle,
-        ),
+        Text(l10n.deliveryLocationSubtitle, style: HeynTextStyles.subtitle),
         const SizedBox(height: 12),
         SizedBox(
           height: 40,
@@ -202,7 +203,7 @@ class _DeliveryLocationPickerState extends State<DeliveryLocationPicker> {
                           child: Text(
                             'Google',
                             style: TextStyle(
-              color: AppColors.textMuted,
+                              color: AppColors.textMuted,
                               fontWeight: FontWeight.w700,
                               fontSize: 11,
                             ),
@@ -248,7 +249,7 @@ class _DeliveryLocationPickerState extends State<DeliveryLocationPicker> {
         HeynSilverField(
           fieldKey: const Key('checkout-landmark'),
           controller: _landmarkController,
-          hintText: 'Repère',
+          hintText: l10n.deliveryLandmark,
           icon: Icons.location_on_outlined,
           onChanged: (value) =>
               widget.onChanged(widget.location.copyWith(landmark: value)),
@@ -257,7 +258,7 @@ class _DeliveryLocationPickerState extends State<DeliveryLocationPicker> {
         HeynSilverField(
           fieldKey: const Key('checkout-phone'),
           controller: _phoneController,
-          hintText: 'Phone number',
+          hintText: l10n.deliveryPhoneNumber,
           icon: Icons.phone_outlined,
           keyboardType: TextInputType.phone,
           textInputAction: TextInputAction.done,
@@ -282,11 +283,7 @@ class _NeighborhoodChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return HeynSelectionChip(
-      label: label,
-      selected: selected,
-      onTap: onTap,
-    );
+    return HeynSelectionChip(label: label, selected: selected, onTap: onTap);
   }
 }
 

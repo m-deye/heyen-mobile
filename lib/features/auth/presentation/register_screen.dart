@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../l10n/app_localizations.dart';
+import '../../../shared/localization/display_localizations.dart';
 import '../../../shared/models/client_type.dart';
 import '../../../theme/heyn_theme.dart';
 import '../application/auth_navigation.dart';
@@ -66,7 +68,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
       return;
     }
 
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+    final l10n = AppLocalizations.of(context);
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(localizedAuthError(error, l10n))));
   }
 
   void _goToLogin() {
@@ -79,6 +84,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: AuthBackground(
@@ -96,7 +102,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         key: const Key('auth-skip'),
                         onPressed: () => skipAuthToHome(context, ref),
                         child: Text(
-                          'Passer',
+                          l10n.authSkip,
                           style: HeynTextStyles.bodyMedium.copyWith(
                             fontWeight: FontWeight.w800,
                             fontSize: 16,
@@ -107,10 +113,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     ),
                     const AuthLogoBadge(size: 96),
                     const SizedBox(height: 20),
-                    const HeynGoldTitle('Créer votre compte', fontSize: 28),
+                    HeynGoldTitle(l10n.authCreateYourAccount, fontSize: 28),
                     const SizedBox(height: 10),
                     Text(
-                      'Rejoignez Heyn pour commander vos produits du quotidien.',
+                      l10n.authRegisterSubtitle,
                       textAlign: TextAlign.center,
                       style: HeynTextStyles.subtitle.copyWith(
                         color: HeynColors.nightPurple.withValues(alpha: 0.78),
@@ -122,7 +128,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           Text(
-                            'Type de client',
+                            l10n.authClientType,
                             style: HeynTextStyles.bodyMedium.copyWith(
                               fontWeight: FontWeight.w700,
                             ),
@@ -137,7 +143,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           const SizedBox(height: 16),
                           _GlassTextField(
                             controller: _nameController,
-                            hintText: 'Nom complet',
+                            hintText: l10n.authFullName,
                             textInputAction: TextInputAction.next,
                             prefixIcon: Icons.person_outline,
                           ),
@@ -157,7 +163,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                     padding: const EdgeInsets.only(top: 12),
                                     child: _GlassTextField(
                                       controller: _shopController,
-                                      hintText: 'Nom de la boutique',
+                                      hintText: l10n.authShopName,
                                       textInputAction: TextInputAction.next,
                                       prefixIcon: Icons.storefront_outlined,
                                     ),
@@ -167,14 +173,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           const SizedBox(height: 12),
                           _GlassTextField(
                             controller: _passwordController,
-                            hintText: 'Mot de passe',
+                            hintText: l10n.authPassword,
                             obscureText: _obscurePassword,
                             textInputAction: TextInputAction.next,
                             prefixIcon: Icons.lock_outline,
                             suffixIcon: IconButton(
                               tooltip: _obscurePassword
-                                  ? 'Afficher le mot de passe'
-                                  : 'Masquer le mot de passe',
+                                  ? l10n.authShowPassword
+                                  : l10n.authHidePassword,
                               onPressed: () {
                                 setState(() {
                                   _obscurePassword = !_obscurePassword;
@@ -191,14 +197,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           const SizedBox(height: 12),
                           _GlassTextField(
                             controller: _confirmController,
-                            hintText: 'Confirmer le mot de passe',
+                            hintText: l10n.authConfirmPassword,
                             obscureText: _obscureConfirm,
                             textInputAction: TextInputAction.done,
                             onSubmitted: (_) => _isLoading ? null : _submit(),
                             suffixIcon: IconButton(
                               tooltip: _obscureConfirm
-                                  ? 'Afficher le mot de passe'
-                                  : 'Masquer le mot de passe',
+                                  ? l10n.authShowPassword
+                                  : l10n.authHidePassword,
                               onPressed: () {
                                 setState(() {
                                   _obscureConfirm = !_obscureConfirm;
@@ -214,7 +220,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           ),
                           const SizedBox(height: 20),
                           AuthGradientButton(
-                            label: 'Créer mon compte',
+                            label: l10n.authCreateMyAccount,
                             isLoading: _isLoading,
                             onPressed: _isLoading ? null : _submit,
                           ),
@@ -223,17 +229,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                     ),
                     const SizedBox(height: 22),
                     Text(
-                      'Vous avez déjà un compte ?',
+                      l10n.authAlreadyHaveAccount,
                       textAlign: TextAlign.center,
                       style: HeynTextStyles.bodyMedium.copyWith(
                         color: HeynColors.textMuted,
                       ),
                     ),
                     const SizedBox(height: 12),
-                    AuthOutlineButton(
-                      label: 'Se connecter',
-                      onTap: _goToLogin,
-                    ),
+                    AuthOutlineButton(label: l10n.authLogin, onTap: _goToLogin),
                   ],
                 ),
               ),

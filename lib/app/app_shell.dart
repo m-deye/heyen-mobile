@@ -7,43 +7,44 @@ import '../core/widgets/bottom_nav_bar.dart';
 import '../features/auth/application/auth_navigation.dart';
 import '../features/auth/application/auth_session_controller.dart';
 import '../features/cart/application/cart_controller.dart';
+import '../l10n/app_localizations.dart';
 
 class AppShell extends ConsumerWidget {
   const AppShell({super.key, required this.navigationShell});
 
   final StatefulNavigationShell navigationShell;
 
-  static const items = [
-    BottomNavItem(
-      icon: Icons.home_outlined,
-      selectedIcon: Icons.home_rounded,
-      label: 'Accueil',
-    ),
-    BottomNavItem(
-      icon: Icons.category_outlined,
-      selectedIcon: Icons.category_rounded,
-      label: 'Catégories',
-    ),
-    BottomNavItem(
-      icon: Icons.shopping_cart_outlined,
-      selectedIcon: Icons.shopping_cart_rounded,
-      label: 'Panier',
-    ),
-    BottomNavItem(
-      icon: Icons.assignment_outlined,
-      selectedIcon: Icons.assignment_rounded,
-      label: 'Commandes',
-    ),
-    BottomNavItem(
-      icon: Icons.person_outline,
-      selectedIcon: Icons.person_rounded,
-      label: 'Profil',
-    ),
-  ];
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final cartCount = ref.watch(cartItemsCountProvider);
+    final items = [
+      BottomNavItem(
+        icon: Icons.home_outlined,
+        selectedIcon: Icons.home_rounded,
+        label: l10n.navHome,
+      ),
+      BottomNavItem(
+        icon: Icons.category_outlined,
+        selectedIcon: Icons.category_rounded,
+        label: l10n.navCategories,
+      ),
+      BottomNavItem(
+        icon: Icons.shopping_cart_outlined,
+        selectedIcon: Icons.shopping_cart_rounded,
+        label: l10n.navCart,
+      ),
+      BottomNavItem(
+        icon: Icons.assignment_outlined,
+        selectedIcon: Icons.assignment_rounded,
+        label: l10n.navOrders,
+      ),
+      BottomNavItem(
+        icon: Icons.person_outline,
+        selectedIcon: Icons.person_rounded,
+        label: l10n.navProfile,
+      ),
+    ];
 
     return Scaffold(
       body: navigationShell,

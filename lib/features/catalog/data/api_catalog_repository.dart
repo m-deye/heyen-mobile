@@ -193,7 +193,8 @@ class DevCatalogRepository implements CatalogRepository {
   @override
   Future<List<Product>> getProducts() async {
     return [
-      for (final product in DevSeedData.products) DevSeedData.withStock(product),
+      for (final product in DevSeedData.products)
+        DevSeedData.withStock(product),
     ];
   }
 }

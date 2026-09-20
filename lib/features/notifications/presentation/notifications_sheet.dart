@@ -2,22 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../l10n/app_localizations.dart';
+import '../../../shared/localization/display_localizations.dart';
 import '../../../shared/models/order.dart';
+import '../../../shared/models/order_status.dart';
 import '../../../theme/heyn_theme.dart';
 import '../../auth/application/auth_navigation.dart';
 import '../../auth/application/auth_session_controller.dart';
 import '../../orders/application/order_tracking_controller.dart';
 
 class OrderNotificationItem {
-  const OrderNotificationItem({
-    required this.title,
-    required this.subtitle,
-    required this.orderId,
-  });
+  const OrderNotificationItem({required this.orderId, required this.status});
 
-  final String title;
-  final String subtitle;
   final String orderId;
+  final OrderStatus status;
 }
 
 final orderNotificationsProvider = Provider<List<OrderNotificationItem>>((ref) {
@@ -29,11 +27,7 @@ final orderNotificationsProvider = Provider<List<OrderNotificationItem>>((ref) {
   return [
     for (final order in orders)
       if (!order.status.isDelivered)
-        OrderNotificationItem(
-          title: 'Commande ${order.id}',
-          subtitle: order.status.label,
-          orderId: order.id,
-        ),
+        OrderNotificationItem(orderId: order.id, status: order.status),
   ];
 });
 
@@ -57,6 +51,7 @@ Future<void> showOrderNotificationsSheet(BuildContext context, WidgetRef ref) {
       borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
     ),
     builder: (context) {
+      final l10n = AppLocalizations.of(context);
       return Padding(
         padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
         child: Column(
@@ -74,13 +69,13 @@ Future<void> showOrderNotificationsSheet(BuildContext context, WidgetRef ref) {
               ),
             ),
             const SizedBox(height: 16),
-            Text('Notifications', style: HeynTextStyles.sectionTitle),
+            Text(l10n.notificationsTitle, style: HeynTextStyles.sectionTitle),
             const SizedBox(height: 12),
             if (items.isEmpty)
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 28),
                 child: Text(
-                  'Aucune notification pour le moment.',
+                  l10n.notificationsEmpty,
                   textAlign: TextAlign.center,
                   style: HeynTextStyles.subtitle,
                 ),
@@ -93,8 +88,14 @@ Future<void> showOrderNotificationsSheet(BuildContext context, WidgetRef ref) {
                     Icons.local_shipping_outlined,
                     color: HeynColors.navy,
                   ),
-                  title: Text(item.title, style: HeynTextStyles.bodyMedium),
-                  subtitle: Text(item.subtitle, style: HeynTextStyles.caption),
+                  title: Text(
+                    l10n.notificationsOrderTitle(item.orderId),
+                    style: HeynTextStyles.bodyMedium,
+                  ),
+                  subtitle: Text(
+                    item.status.localizedLabel(l10n),
+                    style: HeynTextStyles.caption,
+                  ),
                   onTap: () {
                     Navigator.of(context).pop();
                     context.go('/orders');
@@ -106,7 +107,7 @@ Future<void> showOrderNotificationsSheet(BuildContext context, WidgetRef ref) {
                 Navigator.of(context).pop();
                 context.go('/orders');
               },
-              child: const Text('Voir les commandes'),
+              child: Text(l10n.notificationsSeeOrders),
             ),
           ],
         ),

@@ -1,8 +1,16 @@
 import 'package:flutter/material.dart';
 
-import '../../theme/heyn_colors.dart';
 import '../../theme/heyn_text_styles.dart';
 import '../theme/app_colors.dart';
+
+const double _navBarHeight = 58;
+const double _itemHorizontalPadding = 3;
+const double _itemVerticalPadding = 5;
+const double _iconSlotSize = 26;
+const double _iconSize = 22;
+const double _labelSlotHeight = 13;
+const double _iconLabelGap = 3;
+const double _labelFontSize = 10;
 
 class BottomNavBar extends StatelessWidget {
   const BottomNavBar({
@@ -24,14 +32,22 @@ class BottomNavBar extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: const BoxDecoration(
-        color: HeynColors.creamCard,
-        border: Border(top: BorderSide(color: HeynColors.borderGold)),
+        color: AppColors.background,
+        border: Border(top: BorderSide(color: AppColors.divider, width: 0.6)),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadow,
+            blurRadius: 10,
+            offset: Offset(0, -2),
+          ),
+        ],
       ),
       child: SafeArea(
         top: false,
         child: SizedBox(
-          height: 72,
+          height: _navBarHeight,
           child: Row(
+            textDirection: Directionality.of(context),
             children: [
               for (var i = 0; i < items.length; i++)
                 _BarItem(
@@ -76,53 +92,105 @@ class _BarItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: InkWell(
-        onTap: onTap,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 180),
-              width: 44,
-              height: 36,
-              decoration: BoxDecoration(
-                color: selected ? HeynColors.navy : Colors.transparent,
-                borderRadius: BorderRadius.circular(12),
-                boxShadow: selected
-                    ? [
-                        BoxShadow(
-                          color: HeynColors.navy.withValues(alpha: 0.28),
-                          blurRadius: 10,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: _itemHorizontalPadding,
+              vertical: _itemVerticalPadding,
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                SizedBox(
+                  width: _iconSlotSize,
+                  height: _iconSlotSize,
+                  child: Stack(
+                    clipBehavior: Clip.none,
+                    alignment: Alignment.center,
+                    children: [
+                      Icon(
+                        selected ? item.selectedIcon : item.icon,
+                        size: _iconSize,
+                        color: selected
+                            ? AppColors.primary
+                            : AppColors.mutedText,
+                      ),
+                      if (badgeCount > 0)
+                        PositionedDirectional(
+                          top: -5,
+                          end: -7,
+                          child: _CartBadge(count: badgeCount),
                         ),
-                      ]
-                    : null,
-              ),
-              child: Center(
-                child: Badge(
-                  isLabelVisible: badgeCount > 0,
-                  label: Text('$badgeCount'),
-                  backgroundColor: AppColors.danger,
-                  child: Icon(
-                    selected ? item.selectedIcon : item.icon,
-                    size: 22,
-                    color: selected ? HeynColors.onNavy : const Color(0xFF5A6B7A),
+                    ],
                   ),
                 ),
-              ),
+                const SizedBox(height: _iconLabelGap),
+                SizedBox(
+                  width: double.infinity,
+                  height: _labelSlotHeight,
+                  child: Center(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      child: Text(
+                        item.label,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        softWrap: false,
+                        textAlign: TextAlign.center,
+                        style: HeynTextStyles.caption.copyWith(
+                          color: selected
+                              ? AppColors.primary
+                              : AppColors.mutedText,
+                          fontWeight: selected
+                              ? FontWeight.w700
+                              : FontWeight.w500,
+                          fontSize: _labelFontSize,
+                          height: 1,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
-            const SizedBox(height: 4),
-            Text(
-              item.label,
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-              style: HeynTextStyles.caption.copyWith(
-                color: selected ? HeynColors.navy : const Color(0xFF5A6B7A),
-                fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
-                fontSize: 11,
-              ),
-            ),
-          ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CartBadge extends StatelessWidget {
+  const _CartBadge({required this.count});
+
+  final int count;
+
+  @override
+  Widget build(BuildContext context) {
+    final label = count > 99 ? '99+' : '$count';
+
+    return Container(
+      constraints: const BoxConstraints(minWidth: 14),
+      height: 14,
+      padding: const EdgeInsets.symmetric(horizontal: 3),
+      decoration: BoxDecoration(
+        color: AppColors.cartBadge,
+        borderRadius: BorderRadius.circular(999),
+        border: Border.all(color: AppColors.background, width: 1),
+      ),
+      alignment: Alignment.center,
+      child: Text(
+        label,
+        maxLines: 1,
+        style: HeynTextStyles.caption.copyWith(
+          color: AppColors.background,
+          fontSize: 8,
+          fontWeight: FontWeight.w800,
+          height: 1,
         ),
       ),
     );

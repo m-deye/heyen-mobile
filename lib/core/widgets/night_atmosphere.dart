@@ -30,9 +30,21 @@ class NightAtmosphere extends StatelessWidget {
         ),
         CustomPaint(painter: _WavesPainter()),
         CustomPaint(painter: _ParticlesPainter()),
-        _Glow(alignment: Alignment(-0.85, -0.7), size: 280, color: AppColors.primary),
-        _Glow(alignment: Alignment(0.9, -0.2), size: 220, color: Color(0xFF60A5FA)),
-        _Glow(alignment: Alignment(-0.4, 0.85), size: 260, color: AppColors.gold),
+        _Glow(
+          alignment: Alignment(-0.85, -0.7),
+          size: 280,
+          color: AppColors.primary,
+        ),
+        _Glow(
+          alignment: Alignment(0.9, -0.2),
+          size: 220,
+          color: Color(0xFF60A5FA),
+        ),
+        _Glow(
+          alignment: Alignment(-0.4, 0.85),
+          size: 260,
+          color: AppColors.gold,
+        ),
       ],
     );
   }

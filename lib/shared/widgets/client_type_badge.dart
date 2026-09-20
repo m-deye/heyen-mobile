@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
+import '../../l10n/app_localizations.dart';
+import '../localization/display_localizations.dart';
 import '../models/client_type.dart';
 
 class ClientTypeBadge extends StatelessWidget {
@@ -12,6 +14,7 @@ class ClientTypeBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     final palette = onDark ? ChipPalette.bannerChip : ChipPalette.muted;
 
     return Container(
@@ -35,7 +38,7 @@ class ClientTypeBadge extends StatelessWidget {
           ),
           const SizedBox(width: 6),
           Text(
-            type.label,
+            type.localizedLabel(l10n),
             style: AppTextStyles.label.copyWith(color: palette.foreground),
           ),
         ],

@@ -38,16 +38,11 @@ class ProductHeroMedia extends StatelessWidget {
         fit: fit,
         width: double.infinity,
         height: double.infinity,
-        errorBuilder: (_, _, _) => _Fallback(
-          categoryId: product.categoryId,
-          index: index,
-        ),
+        errorBuilder: (_, _, _) =>
+            _Fallback(categoryId: product.categoryId, index: index),
       );
     } else {
-      child = _Fallback(
-        categoryId: product.categoryId,
-        index: index,
-      );
+      child = _Fallback(categoryId: product.categoryId, index: index);
     }
 
     return ClipRRect(
@@ -62,10 +57,7 @@ class ProductHeroMedia extends StatelessWidget {
 }
 
 class _Fallback extends StatelessWidget {
-  const _Fallback({
-    required this.categoryId,
-    this.index,
-  });
+  const _Fallback({required this.categoryId, this.index});
 
   final String categoryId;
   final int? index;

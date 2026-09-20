@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_localizations.dart';
+import '../localization/display_localizations.dart';
 import '../../theme/heyn_theme.dart';
 import '../models/payment_method.dart';
 
@@ -15,18 +17,18 @@ class PaymentMethodPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Mode Paiement',
-          style: HeynTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w800),
+          l10n.paymentMethodTitle,
+          style: HeynTextStyles.bodyMedium.copyWith(
+            fontWeight: FontWeight.w800,
+          ),
         ),
         const SizedBox(height: 4),
-        Text(
-          'Sélectionnez votre mode de paiement et confirmez.',
-          style: HeynTextStyles.subtitle,
-        ),
+        Text(l10n.paymentMethodSubtitle, style: HeynTextStyles.subtitle),
         const SizedBox(height: 14),
         LayoutBuilder(
           builder: (context, constraints) {
@@ -73,6 +75,7 @@ class _OperatorCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Material(
       color: selected ? HeynColors.navy : HeynColors.creamCard,
       borderRadius: BorderRadius.circular(14),
@@ -110,9 +113,7 @@ class _OperatorCard extends StatelessWidget {
                         ),
                         child: Icon(
                           _icon,
-                          color: selected
-                              ? HeynColors.onNavy
-                              : HeynColors.navy,
+                          color: selected ? HeynColors.onNavy : HeynColors.navy,
                           size: 22,
                         ),
                       ),
@@ -120,14 +121,12 @@ class _OperatorCard extends StatelessWidget {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    method.label,
+                    method.localizedLabel(l10n),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     textAlign: TextAlign.center,
                     style: HeynTextStyles.caption.copyWith(
-                      color: selected
-                          ? HeynColors.onNavy
-                          : HeynColors.navy,
+                      color: selected ? HeynColors.onNavy : HeynColors.navy,
                       fontWeight: FontWeight.w700,
                     ),
                   ),

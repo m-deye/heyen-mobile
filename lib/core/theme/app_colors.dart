@@ -2,33 +2,67 @@ import 'package:flutter/material.dart';
 
 import '../../theme/heyn_colors.dart';
 
-/// Thème clair Heyn — navy / turquoise (alias vers [HeynColors]).
+/// Palette officielle Heyn issue des références visuelles.
 class AppColors {
   const AppColors._();
 
-  static const background = HeynColors.cream;
+  static const Color primary = Color(0xFF087786);
+  static const Color primaryDark = Color(0xFF05606C);
+  static const Color primaryPressed = Color(0xFF064E58);
+
+  static const Color darkText = Color(0xFF102D33);
+  static const Color secondaryText = Color(0xFF8FA3A8);
+  static const Color mutedText = Color(0xFFAEBEC2);
+
+  static const Color background = Color(0xFFFFFFFF);
   static const surface = HeynColors.creamCard;
   static const surfaceMuted = Color(0xFFE8EEF2);
-  static const border = HeynColors.borderGold;
-  static const primary = HeynColors.navy;
-  static const primaryDark = HeynColors.navy;
+  static const Color scaffoldBackground = Color(0xFFF5F9F9);
+  static const Color lightTeal = Color(0xFFEDF7F7);
+  static const Color hatchGreen = Color(0xFFE4EFEC);
+
+  static const Color success = Color(0xFF1FA85B);
+  static const Color successBackground = Color(0xFFE7F6EE);
+  static const Color warning = Color(0xFFF5A623);
+  static const Color warningBackground = Color(0xFFFDF1DC);
+  static const Color danger = Color(0xFFE23D3D);
+  static const Color dangerBackground = Color(0xFFFBE7E7);
+
+  static const Color cartBadge = Color(0xFFF5920B);
+  static const Color darkButton = Color(0xFF102D33);
+  static const Color rating = Color(0xFFF5A623);
+
+  static const Color border = Color(0xFFE6EEEE);
+  static const Color divider = Color(0xFFEEF3F3);
+  static const Color inputFill = Color(0xFFFFFFFF);
+  static const Color chipBackground = Color(0xFFFFFFFF);
+  static const Color chipSelectedBackground = Color(0xFFEDF7F7);
+  static const Color shimmerBase = Color(0xFFECF1F1);
+  static const Color shimmerHighlight = Color(0xFFF7FAFA);
+  static const List<Color> categoryTints = <Color>[
+    Color(0xFFEAF3F1),
+    Color(0xFFF6EFE2),
+    Color(0xFFECEFF4),
+    Color(0xFFF3EEE9),
+    Color(0xFFEFF4EC),
+    Color(0xFFEDEFF3),
+  ];
+  static const Color shadow = Color(0x14102D33);
+
   static const primaryLight = HeynColors.turquoise;
   static const accent = HeynColors.turquoise;
   static const gold = HeynColors.turquoise;
   static const textPrimary = HeynColors.textDark;
   static const textSecondary = HeynColors.textMuted;
   static const textMuted = HeynColors.textMuted;
-  static const accentOrange = HeynColors.danger;
-  static const success = Color(0xFF10B981);
-  static const successBg = Color(0xFFE8F5E9);
+
+  static const accentOrange = danger;
+  static const successBg = successBackground;
   static const successText = Color(0xFF2E7D32);
-  static const danger = HeynColors.danger;
-  static const dangerBg = Color(0xFFFCE4EC);
+  static const dangerBg = dangerBackground;
   static const chipIdle = HeynColors.creamCard;
   static const iconCircle = HeynColors.cream;
-  static const inputFill = HeynColors.silverStart;
-  static const inputBorder = HeynColors.borderGold;
-  static const divider = Color(0xFFE8DFD0);
+  static const inputBorder = border;
   static const metal = HeynColors.silverStart;
   static const bannerOn = HeynColors.navy;
 

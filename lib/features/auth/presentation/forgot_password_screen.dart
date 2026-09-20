@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../l10n/app_localizations.dart';
+import '../../../shared/localization/display_localizations.dart';
 import '../../../theme/heyn_theme.dart';
 import '../application/auth_session_controller.dart';
 import 'auth_chrome.dart';
@@ -41,11 +43,15 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
       setState(() => _sent = true);
       return;
     }
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+    final l10n = AppLocalizations.of(context);
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(localizedAuthError(error, l10n))));
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: AuthBackground(
@@ -59,10 +65,10 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                   children: [
                     const AuthLogoBadge(size: 96),
                     const SizedBox(height: 20),
-                    const HeynGoldTitle('Mot de passe oublié', fontSize: 28),
+                    HeynGoldTitle(l10n.authForgotPasswordTitle, fontSize: 28),
                     const SizedBox(height: 10),
                     Text(
-                      'Indiquez l\'email de votre compte. En local, le lien s\'affiche dans le terminal de npm run dev.',
+                      l10n.authForgotPasswordSubtitle,
                       textAlign: TextAlign.center,
                       style: HeynTextStyles.subtitle.copyWith(
                         color: HeynColors.nightPurple.withValues(alpha: 0.78),
@@ -93,8 +99,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                           ),
                           const SizedBox(height: 16),
                           if (_sent) ...[
-                            const Text(
-                              'Si un compte existe avec cet email, un lien de réinitialisation vient d\'être envoyé.',
+                            Text(
+                              l10n.authResetLinkSent,
                               style: TextStyle(
                                 color: HeynColors.textDark,
                                 fontWeight: FontWeight.w700,
@@ -104,15 +110,15 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                             const SizedBox(height: 12),
                           ],
                           AuthGradientButton(
-                            label: 'Envoyer le lien',
+                            label: l10n.authSendResetLink,
                             isLoading: _isLoading,
                             onPressed: _isLoading ? null : _submit,
                           ),
                           const SizedBox(height: 12),
                           TextButton(
                             onPressed: () => context.push('/reset-password'),
-                            child: const Text(
-                              'J\'ai déjà un code',
+                            child: Text(
+                              l10n.authAlreadyHaveCode,
                               style: TextStyle(
                                 color: HeynColors.goldDark,
                                 fontWeight: FontWeight.w700,
@@ -131,8 +137,8 @@ class _ForgotPasswordScreenState extends ConsumerState<ForgotPasswordScreen> {
                         }
                         context.go('/login');
                       },
-                      child: const Text(
-                        'Retour à la connexion',
+                      child: Text(
+                        l10n.commonBackToLogin,
                         style: TextStyle(
                           color: HeynColors.goldDark,
                           fontWeight: FontWeight.w700,

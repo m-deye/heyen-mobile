@@ -36,7 +36,10 @@ class HeynLogoHeader extends StatelessWidget {
             ],
           ),
         ),
-        if (trailing != null) ...[const SizedBox(width: AppSpacing.s8), trailing!],
+        if (trailing != null) ...[
+          const SizedBox(width: AppSpacing.s8),
+          trailing!,
+        ],
       ],
     );
   }

@@ -34,7 +34,8 @@ class HeynGlassBox extends StatelessWidget {
         borderRadius: borderRadius,
         color: frosted ? const Color(0xA3FFFDF7) : HeynColors.creamCard,
         border: Border.all(
-          color: borderColor ??
+          color:
+              borderColor ??
               (frosted ? const Color(0xFFD9BE7E) : HeynColors.borderGold),
           width: borderWidth,
         ),
@@ -90,10 +91,7 @@ class GoldGradientHeader extends StatelessWidget {
                   trailing ?? const SizedBox(width: 44),
                 ],
               ),
-            if (child != null) ...[
-              child!,
-              const SizedBox(height: 12),
-            ],
+            if (child != null) ...[child!, const SizedBox(height: 12)],
             Text(
               title,
               textAlign: TextAlign.center,
@@ -472,9 +470,7 @@ class HeynSelectionChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: selected
-          ? HeynColors.navy
-          : (fillColor ?? HeynColors.creamCard),
+      color: selected ? HeynColors.navy : (fillColor ?? HeynColors.creamCard),
       shape: StadiumBorder(
         side: BorderSide(
           color: selected

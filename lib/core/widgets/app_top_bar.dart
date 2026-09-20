@@ -99,7 +99,9 @@ class AppTopBar extends StatelessWidget {
                         const SizedBox(height: 4),
                         Text(
                           subtitle!,
-                          style: AppTextStyles.subtitle.copyWith(color: onColor),
+                          style: AppTextStyles.subtitle.copyWith(
+                            color: onColor,
+                          ),
                         ),
                       ],
                     ],

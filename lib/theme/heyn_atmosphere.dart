@@ -7,11 +7,7 @@ import 'heyn_colors.dart';
 
 /// Fond crème / blanc teinté navy–turquoise.
 class HeynPageBackdrop extends StatelessWidget {
-  const HeynPageBackdrop({
-    super.key,
-    required this.child,
-    this.silk = true,
-  });
+  const HeynPageBackdrop({super.key, required this.child, this.silk = true});
 
   final Widget child;
   final bool silk;
@@ -134,7 +130,10 @@ class HeynProduceBasket extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const CustomPaint(painter: _BasketPainter(), child: SizedBox.expand());
+    return const CustomPaint(
+      painter: _BasketPainter(),
+      child: SizedBox.expand(),
+    );
   }
 }
 
@@ -257,16 +256,48 @@ class _CategoryScenePainter extends CustomPainter {
 
     switch (categoryId) {
       case 'jus':
-        _glass(canvas, Offset(cx - s * 0.16, cy), s * 0.22, const Color(0xFFFF9800));
-        _glass(canvas, Offset(cx + s * 0.18, cy + 4), s * 0.2, const Color(0xFFE53935));
+        _glass(
+          canvas,
+          Offset(cx - s * 0.16, cy),
+          s * 0.22,
+          const Color(0xFFFF9800),
+        );
+        _glass(
+          canvas,
+          Offset(cx + s * 0.18, cy + 4),
+          s * 0.2,
+          const Color(0xFFE53935),
+        );
       case 'eau':
-        _bottle(canvas, Offset(cx - s * 0.14, cy), s * 0.18, const Color(0xFF4FC3F7));
-        _bottle(canvas, Offset(cx + s * 0.16, cy + 6), s * 0.16, const Color(0xFF81D4FA));
+        _bottle(
+          canvas,
+          Offset(cx - s * 0.14, cy),
+          s * 0.18,
+          const Color(0xFF4FC3F7),
+        );
+        _bottle(
+          canvas,
+          Offset(cx + s * 0.16, cy + 6),
+          s * 0.16,
+          const Color(0xFF81D4FA),
+        );
       case 'dattes':
         _bowl(canvas, Offset(cx, cy + 8), s * 0.42, const Color(0xFF6D4C41));
-        canvas.drawCircle(Offset(cx - 10, cy - 8), s * 0.08, Paint()..color = const Color(0xFF5D4037));
-        canvas.drawCircle(Offset(cx + 12, cy - 4), s * 0.07, Paint()..color = const Color(0xFF4E342E));
-        canvas.drawCircle(Offset(cx, cy - 18), s * 0.06, Paint()..color = const Color(0xFF795548));
+        canvas.drawCircle(
+          Offset(cx - 10, cy - 8),
+          s * 0.08,
+          Paint()..color = const Color(0xFF5D4037),
+        );
+        canvas.drawCircle(
+          Offset(cx + 12, cy - 4),
+          s * 0.07,
+          Paint()..color = const Color(0xFF4E342E),
+        );
+        canvas.drawCircle(
+          Offset(cx, cy - 18),
+          s * 0.06,
+          Paint()..color = const Color(0xFF795548),
+        );
       case 'huile':
         _bottle(canvas, Offset(cx, cy), s * 0.22, const Color(0xFFFFC107));
       case 'riz':
@@ -288,7 +319,11 @@ class _CategoryScenePainter extends CustomPainter {
     canvas.drawRRect(r, Paint()..color = Colors.white.withValues(alpha: 0.55));
     canvas.drawRRect(
       RRect.fromRectAndRadius(
-        Rect.fromCenter(center: c.translate(0, h * 0.12), width: h * 0.42, height: h * 0.62),
+        Rect.fromCenter(
+          center: c.translate(0, h * 0.12),
+          width: h * 0.42,
+          height: h * 0.62,
+        ),
         const Radius.circular(4),
       ),
       Paint()..color = liquid,
@@ -305,7 +340,11 @@ class _CategoryScenePainter extends CustomPainter {
     );
     canvas.drawRRect(
       RRect.fromRectAndRadius(
-        Rect.fromCenter(center: c.translate(0, -h * 0.58), width: h * 0.18, height: h * 0.22),
+        Rect.fromCenter(
+          center: c.translate(0, -h * 0.58),
+          width: h * 0.18,
+          height: h * 0.22,
+        ),
         const Radius.circular(4),
       ),
       Paint()..color = color.withValues(alpha: 0.85),
@@ -321,7 +360,12 @@ class _CategoryScenePainter extends CustomPainter {
     final path = Path()
       ..moveTo(c.dx - w * 0.38, c.dy - w * 0.18)
       ..lineTo(c.dx - w * 0.42, c.dy + w * 0.32)
-      ..quadraticBezierTo(c.dx, c.dy + w * 0.42, c.dx + w * 0.42, c.dy + w * 0.32)
+      ..quadraticBezierTo(
+        c.dx,
+        c.dy + w * 0.42,
+        c.dx + w * 0.42,
+        c.dy + w * 0.32,
+      )
       ..lineTo(c.dx + w * 0.38, c.dy - w * 0.18)
       ..close();
     canvas.drawPath(path, Paint()..color = const Color(0xFFE8D5A3));

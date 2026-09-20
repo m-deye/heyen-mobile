@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
+import '../../../l10n/app_localizations.dart';
 import '../../../shared/formatters/price_formatter.dart';
-import '../../../shared/models/client_type.dart';
+import '../../../shared/localization/display_localizations.dart';
 import '../../../shared/models/order.dart';
 import '../../../shared/models/order_status.dart';
 import '../../../shared/models/quote.dart';
@@ -11,6 +13,7 @@ import '../../../theme/heyn_theme.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/theme/app_text_styles.dart';
 import '../../auth/application/auth_session_controller.dart';
+import '../../cart/application/cart_controller.dart';
 import '../../checkout/application/checkout_controllers.dart';
 import '../application/order_tracking_controller.dart';
 import 'order_status_timeline.dart';
@@ -20,112 +23,146 @@ class OrdersScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final ordersState = ref.watch(ordersProvider);
     final quotes = ref.watch(quotesControllerProvider);
     final clientType = ref.watch(currentClientTypeProvider);
 
-    return HeynPageBackdrop(
-      child: CustomScrollView(
-        slivers: [
-          SliverToBoxAdapter(child: _OrdersHeader(clientType: clientType)),
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(20, 20, 20, 28),
-            sliver: SliverList(
-              delegate: SliverChildListDelegate([
-                if (clientType.isCommercant) ...[
-                  Text(
-                    'Devis',
-                    style: HeynTextStyles.sectionTitle,
-                  ),
-                  const SizedBox(height: 12),
-                  if (quotes.isEmpty)
-                    const _EmptyQuotesCard()
-                  else
-                    for (final quote in quotes) _QuoteCard(quote: quote),
-                  const SizedBox(height: 24),
-                ],
-                Text('Historique', style: HeynTextStyles.sectionTitle),
-                const SizedBox(height: 12),
-                ordersState.when(
+    return DefaultTabController(
+      length: 2,
+      child: Container(
+        color: AppColors.scaffoldBackground,
+        child: SafeArea(
+          bottom: false,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const _OrdersHeader(),
+              _OrdersTabs(l10n: l10n),
+              Expanded(
+                child: ordersState.when(
                   loading: () =>
                       const Center(child: CircularProgressIndicator()),
-                  error: (error, _) => ApiStateCard.error(error),
+                  error: (error, _) => Padding(
+                    padding: const EdgeInsets.all(20),
+                    child: ApiStateCard.error(error, l10n),
+                  ),
                   data: (orders) {
-                    if (orders.isEmpty && quotes.isEmpty) {
-                      return const ApiStateCard(
-                        title: 'Aucune commande pour le moment',
-                        icon: Icons.receipt_long_outlined,
-                      );
-                    }
+                    final currentOrders = [
+                      for (final order in orders)
+                        if (!order.status.isDelivered) order,
+                    ];
+                    final previousOrders = [
+                      for (final order in orders)
+                        if (order.status.isDelivered) order,
+                    ];
 
-                    return Column(
+                    return TabBarView(
                       children: [
-                        for (final order in orders) _OrderCard(order: order),
+                        _OrdersList(
+                          orders: currentOrders,
+                          quotes: clientType.isCommercant ? quotes : const [],
+                          emptyTitle: l10n.ordersNoCurrentOrders,
+                        ),
+                        _OrdersList(
+                          orders: previousOrders,
+                          quotes: const [],
+                          emptyTitle: l10n.ordersNoPreviousOrders,
+                        ),
                       ],
                     );
                   },
                 ),
-              ]),
-            ),
+              ),
+            ],
           ),
-        ],
-      ),
-    );
-  }
-}
-
-class _OrdersHeader extends StatelessWidget {
-  const _OrdersHeader({required this.clientType});
-
-  final ClientType clientType;
-
-  @override
-  Widget build(BuildContext context) {
-    return SafeArea(
-      bottom: false,
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              clientType.isCommercant
-                  ? 'Devis et commandes'
-                  : 'Historique des commandes',
-              style: HeynTextStyles.displayTitle,
-            ),
-            const SizedBox(height: 6),
-            Text(
-              clientType.isCommercant
-                  ? 'Les devis gros attendent la validation admin, puis le paiement mobile.'
-                  : 'Commandes livrées, en cours, et confirmations WhatsApp.',
-              style: HeynTextStyles.subtitle,
-            ),
-          ],
         ),
       ),
     );
   }
 }
 
-class _EmptyQuotesCard extends StatelessWidget {
-  const _EmptyQuotesCard();
+class _OrdersHeader extends StatelessWidget {
+  const _OrdersHeader();
 
   @override
   Widget build(BuildContext context) {
-    return HeynCard(
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 42),
-      child: Column(
-        children: [
-          Icon(Icons.crop_din, size: 34, color: AppColors.textMuted),
-          const SizedBox(height: 12),
-          Text(
-            'Aucun devis pour le moment',
-            textAlign: TextAlign.center,
-            style: AppTextStyles.body.copyWith(fontWeight: FontWeight.w600),
-          ),
-        ],
+    final l10n = AppLocalizations.of(context);
+    return Padding(
+      padding: const EdgeInsetsDirectional.fromSTEB(20, 18, 20, 8),
+      child: Text(
+        l10n.navOrders,
+        style: HeynTextStyles.displayTitle.copyWith(
+          fontSize: 28,
+          color: AppColors.darkText,
+        ),
       ),
+    );
+  }
+}
+
+class _OrdersTabs extends StatelessWidget {
+  const _OrdersTabs({required this.l10n});
+
+  final AppLocalizations l10n;
+
+  @override
+  Widget build(BuildContext context) {
+    return TabBar(
+      isScrollable: true,
+      tabAlignment: TabAlignment.start,
+      labelPadding: const EdgeInsetsDirectional.only(start: 20, end: 18),
+      indicatorPadding: const EdgeInsetsDirectional.only(start: 20, end: 18),
+      indicatorSize: TabBarIndicatorSize.tab,
+      indicatorColor: AppColors.primary,
+      indicatorWeight: 3,
+      dividerColor: Colors.transparent,
+      labelColor: AppColors.darkText,
+      unselectedLabelColor: AppColors.secondaryText,
+      labelStyle: AppTextStyles.label.copyWith(
+        fontSize: 18,
+        fontWeight: FontWeight.w800,
+      ),
+      unselectedLabelStyle: AppTextStyles.label.copyWith(
+        fontSize: 18,
+        fontWeight: FontWeight.w700,
+      ),
+      tabs: [
+        Tab(text: l10n.ordersCurrentTab),
+        Tab(text: l10n.ordersPreviousTab),
+      ],
+    );
+  }
+}
+
+class _OrdersList extends StatelessWidget {
+  const _OrdersList({
+    required this.orders,
+    required this.quotes,
+    required this.emptyTitle,
+  });
+
+  final List<Order> orders;
+  final List<Quote> quotes;
+  final String emptyTitle;
+
+  @override
+  Widget build(BuildContext context) {
+    if (orders.isEmpty && quotes.isEmpty) {
+      return ListView(
+        padding: const EdgeInsets.all(20),
+        children: [
+          ApiStateCard(title: emptyTitle, icon: Icons.receipt_long_outlined),
+        ],
+      );
+    }
+
+    return ListView(
+      padding: const EdgeInsets.fromLTRB(20, 22, 20, 28),
+      children: [
+        for (final quote in quotes) _QuoteCard(quote: quote),
+        for (final order in orders) _OrderCard(order: order),
+      ],
     );
   }
 }
@@ -137,6 +174,7 @@ class _QuoteCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
     final type = ref.watch(currentClientTypeProvider);
 
     return HeynCard(
@@ -147,10 +185,13 @@ class _QuoteCard extends ConsumerWidget {
           Row(
             children: [
               Expanded(
-                child: Text(quote.id, style: AppTextStyles.label.copyWith(fontSize: 15)),
+                child: Text(
+                  quote.id,
+                  style: AppTextStyles.label.copyWith(fontSize: 15),
+                ),
               ),
               _StatusPill(
-                label: quote.status.label,
+                label: quote.status.localizedLabel(l10n),
                 kind: quote.status == QuoteStatus.approved
                     ? _StatusKind.done
                     : quote.status == QuoteStatus.rejected
@@ -167,12 +208,14 @@ class _QuoteCard extends ConsumerWidget {
               padding: const EdgeInsets.only(bottom: 6),
               child: Text(
                 '${line.quantity} x ${line.product.name}',
-                style: AppTextStyles.body.copyWith(color: AppColors.textPrimary),
+                style: AppTextStyles.body.copyWith(
+                  color: AppColors.textPrimary,
+                ),
               ),
             ),
           const SizedBox(height: 6),
           Text(
-            '${quote.paymentMethod.label} · ${formatOuguiya(quote.totalFor(type))}',
+            '${quote.paymentMethod.localizedLabel(l10n)} · ${formatOuguiya(quote.totalFor(type))}',
             style: AppTextStyles.price.copyWith(fontSize: 16),
           ),
           if (quote.status == QuoteStatus.pending) ...[
@@ -184,7 +227,7 @@ class _QuoteCard extends ConsumerWidget {
                     onPressed: () => ref
                         .read(quotesControllerProvider.notifier)
                         .reject(quote.id),
-                    child: const Text('Refuser'),
+                    child: Text(l10n.ordersRejectQuote),
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -193,7 +236,7 @@ class _QuoteCard extends ConsumerWidget {
                     onPressed: () => ref
                         .read(quotesControllerProvider.notifier)
                         .approve(quote.id),
-                    child: const Text('Valider'),
+                    child: Text(l10n.ordersApproveQuote),
                   ),
                 ),
               ],
@@ -210,12 +253,14 @@ class _QuoteCard extends ConsumerWidget {
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text(
-                      'Paiement ${quote.paymentMethod.label} confirmé. WhatsApp notifié.',
+                      l10n.ordersPaymentConfirmed(
+                        quote.paymentMethod.localizedLabel(l10n),
+                      ),
                     ),
                   ),
                 );
               },
-              child: const Text('Payer et confirmer'),
+              child: Text(l10n.ordersPayAndConfirm),
             ),
           ],
         ],
@@ -224,83 +269,281 @@ class _QuoteCard extends ConsumerWidget {
   }
 }
 
-class _OrderCard extends StatelessWidget {
+class _OrderCard extends ConsumerWidget {
   const _OrderCard({required this.order});
 
   final Order order;
 
   @override
-  Widget build(BuildContext context) {
-    final itemCount = order.lines.fold<int>(0, (sum, line) => sum + line.quantity);
-    return HeynCard(
-      margin: const EdgeInsets.only(bottom: 12),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context);
+    final itemCount = order.lines.fold<int>(
+      0,
+      (sum, line) => sum + line.quantity,
+    );
+    return Container(
+      margin: const EdgeInsets.only(bottom: 16),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
+      decoration: BoxDecoration(
+        color: AppColors.surface,
+        borderRadius: BorderRadius.circular(22),
+        border: Border.all(color: AppColors.border),
+        boxShadow: const [AppColors.cardShadow],
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Expanded(
+              _StatusPill(
+                label: order.status.localizedLabel(l10n),
+                kind: _kindFor(order.status),
+              ),
+              const Spacer(),
+              Flexible(
                 child: Text(
-                  order.id,
-                  style: HeynTextStyles.bodyMedium.copyWith(
-                    fontWeight: FontWeight.w700,
+                  _shortOrderId(order.id),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.end,
+                  style: AppTextStyles.label.copyWith(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.darkText,
                   ),
                 ),
               ),
-              if (order.date != null)
-                Text(_formatDate(order.date!), style: HeynTextStyles.subtitle),
+              const SizedBox(width: 10),
+              Container(
+                width: 44,
+                height: 44,
+                decoration: BoxDecoration(
+                  color: AppColors.lightTeal,
+                  borderRadius: BorderRadius.circular(11),
+                ),
+                child: const Icon(
+                  Icons.receipt_long_outlined,
+                  color: AppColors.primary,
+                  size: 22,
+                ),
+              ),
             ],
           ),
-          const SizedBox(height: 10),
-          _StatusPill(label: order.status.label, kind: _kindFor(order.status)),
-          const SizedBox(height: 8),
+          const SizedBox(height: 14),
           Text(
-            itemCount <= 1 ? '$itemCount article' : '$itemCount articles',
-            style: HeynTextStyles.subtitle,
+            _orderMeta(l10n, itemCount),
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: AppTextStyles.body.copyWith(
+              fontSize: 14,
+              color: AppColors.secondaryText,
+              fontWeight: FontWeight.w600,
+            ),
           ),
-          const SizedBox(height: 8),
-          for (final line in order.lines)
-            Padding(
-              padding: const EdgeInsets.only(bottom: 4),
-              child: Text(
-                '${line.quantity} x ${line.product.name}',
-                style: HeynTextStyles.subtitle,
+          const SizedBox(height: 14),
+          const Divider(height: 1, color: AppColors.divider),
+          const SizedBox(height: 14),
+          Row(
+            children: [
+              Text(
+                formatOuguiya(order.total),
+                style: AppTextStyles.price.copyWith(
+                  fontSize: 18,
+                  color: AppColors.primary,
+                ),
               ),
-            ),
-          const SizedBox(height: 8),
-          Align(
-            alignment: Alignment.centerRight,
-            child: Text(
-              formatOuguiya(order.total),
-              style: HeynTextStyles.priceBold.copyWith(fontSize: 16),
-            ),
+              const Spacer(),
+              Text(
+                l10n.cartFinalTotal,
+                style: AppTextStyles.body.copyWith(
+                  color: AppColors.secondaryText,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(height: 12),
-          Container(
-            width: double.infinity,
-            padding: const EdgeInsets.fromLTRB(14, 16, 14, 12),
-            decoration: BoxDecoration(
-              color: HeynColors.cream,
-              borderRadius: BorderRadius.circular(16),
-            ),
-            child: OrderStatusTimeline(currentStatus: order.status),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: OutlinedButton(
+                  onPressed: () => _showOrderDetails(context, order),
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size.fromHeight(52),
+                    foregroundColor: AppColors.primary,
+                    side: const BorderSide(color: AppColors.border),
+                    backgroundColor: Colors.white,
+                    shape: const StadiumBorder(),
+                  ),
+                  child: Text(l10n.ordersViewDetails),
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: FilledButton.icon(
+                  onPressed: () {
+                    final cart = ref.read(cartControllerProvider.notifier);
+                    for (final line in order.lines) {
+                      cart.addProduct(line.product, quantity: line.quantity);
+                    }
+                    context.go('/cart');
+                  },
+                  icon: const Icon(Icons.refresh_rounded, size: 19),
+                  label: Text(
+                    l10n.ordersReorder,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size.fromHeight(52),
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    shape: const StadiumBorder(),
+                  ),
+                ),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
 
+  void _showOrderDetails(BuildContext context, Order order) {
+    final l10n = AppLocalizations.of(context);
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: AppColors.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(26)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(20, 18, 20, 28),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Center(
+                  child: Container(
+                    width: 42,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: AppColors.border,
+                      borderRadius: BorderRadius.circular(99),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 18),
+                Text(
+                  l10n.ordersDetailsTitle,
+                  style: AppTextStyles.headline.copyWith(
+                    color: AppColors.darkText,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(order.id, style: AppTextStyles.body),
+                const SizedBox(height: 18),
+                for (final line in order.lines)
+                  Padding(
+                    padding: const EdgeInsets.only(bottom: 8),
+                    child: Text(
+                      '${line.quantity} x ${line.product.name}',
+                      style: AppTextStyles.label.copyWith(
+                        color: AppColors.darkText,
+                      ),
+                    ),
+                  ),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Text(l10n.cartFinalTotal, style: AppTextStyles.body),
+                    const Spacer(),
+                    Text(
+                      formatOuguiya(order.total),
+                      style: AppTextStyles.price.copyWith(fontSize: 18),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 18),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.fromLTRB(16, 18, 16, 14),
+                  decoration: BoxDecoration(
+                    color: AppColors.lightTeal,
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: OrderStatusTimeline(currentStatus: order.status),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  String _orderMeta(AppLocalizations l10n, int itemCount) {
+    final date = order.date;
+    final count = l10n.commonProductCount(itemCount);
+    if (date == null) {
+      return count;
+    }
+    return '${_formatDateTime(date, l10n.localeName)} · $count';
+  }
+
+  String _formatDateTime(DateTime date, String localeName) {
+    const frMonths = [
+      'janvier',
+      'février',
+      'mars',
+      'avril',
+      'mai',
+      'juin',
+      'juillet',
+      'août',
+      'septembre',
+      'octobre',
+      'novembre',
+      'décembre',
+    ];
+    const arMonths = [
+      'يناير',
+      'فبراير',
+      'مارس',
+      'أبريل',
+      'مايو',
+      'يونيو',
+      'يوليو',
+      'أغسطس',
+      'سبتمبر',
+      'أكتوبر',
+      'نوفمبر',
+      'ديسمبر',
+    ];
+    final months = localeName.startsWith('ar') ? arMonths : frMonths;
+    final hour = date.hour.toString().padLeft(2, '0');
+    final minute = date.minute.toString().padLeft(2, '0');
+    return '${date.day} ${months[date.month - 1]} ${date.year} · $hour:$minute';
+  }
+
+  String _shortOrderId(String id) {
+    if (id.length <= 8) {
+      return id;
+    }
+    final suffix = id.substring(id.length - 5);
+    return 'HN-$suffix';
+  }
+
   _StatusKind _kindFor(OrderStatus status) {
     return switch (status) {
       OrderStatus.livree => _StatusKind.done,
-      OrderStatus.enLivraison || OrderStatus.enPreparation => _StatusKind.progress,
+      OrderStatus.enLivraison ||
+      OrderStatus.enPreparation => _StatusKind.progress,
       OrderStatus.confirmee => _StatusKind.pending,
     };
-  }
-
-  String _formatDate(DateTime date) {
-    return '${date.day.toString().padLeft(2, '0')}/'
-        '${date.month.toString().padLeft(2, '0')}/${date.year}';
   }
 }
 
@@ -327,7 +570,10 @@ class _StatusPill extends StatelessWidget {
       ),
       child: Text(
         label,
-        style: HeynTextStyles.caption.copyWith(color: fg, fontWeight: FontWeight.w700),
+        style: HeynTextStyles.caption.copyWith(
+          color: fg,
+          fontWeight: FontWeight.w700,
+        ),
       ),
     );
   }

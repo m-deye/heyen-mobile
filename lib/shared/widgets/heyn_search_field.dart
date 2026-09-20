@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../l10n/app_localizations.dart';
 import '../../theme/heyn_theme.dart';
 
 class HeynSearchField extends StatelessWidget {
@@ -18,6 +19,7 @@ class HeynSearchField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return HeynGlassBox(
       radius: 22,
       child: TextField(
@@ -27,7 +29,9 @@ class HeynSearchField extends StatelessWidget {
         onSubmitted: onSubmitted,
         style: HeynTextStyles.bodyMedium.copyWith(fontWeight: FontWeight.w600),
         decoration: InputDecoration(
-          hintText: hintText,
+          hintText: hintText == 'Rechercher un produit'
+              ? l10n.commonSearchProduct
+              : hintText,
           hintStyle: HeynTextStyles.subtitle,
           prefixIcon: const Icon(
             Icons.search,
@@ -37,7 +41,7 @@ class HeynSearchField extends StatelessWidget {
           suffixIcon: controller.text.isEmpty
               ? null
               : IconButton(
-                  tooltip: 'Effacer',
+                  tooltip: l10n.commonClear,
                   onPressed: () {
                     controller.clear();
                     onChanged?.call('');

@@ -48,5 +48,6 @@ class GuestBrowseAllowed extends Notifier<bool> {
   void reset() => state = false;
 }
 
-final guestBrowseAllowedProvider =
-    NotifierProvider<GuestBrowseAllowed, bool>(GuestBrowseAllowed.new);
+final guestBrowseAllowedProvider = NotifierProvider<GuestBrowseAllowed, bool>(
+  GuestBrowseAllowed.new,
+);

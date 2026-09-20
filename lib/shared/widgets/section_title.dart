@@ -18,7 +18,9 @@ class SectionTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Expanded(child: Text(title, style: AppTextStyles.title.copyWith(fontSize: 18))),
+        Expanded(
+          child: Text(title, style: AppTextStyles.title.copyWith(fontSize: 18)),
+        ),
         if (actionLabel != null)
           TextButton(onPressed: onActionPressed, child: Text(actionLabel!)),
       ],

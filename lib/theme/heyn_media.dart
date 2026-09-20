@@ -6,11 +6,17 @@ class HeynMedia {
   const HeynMedia._();
 
   static const cocktail = 'assets/images/categories/cocktail.png';
+  static const homeBanner = 'assets/images/home_banner.png';
   static const bannerBasket = 'assets/images/categories/fruits.png';
+  static const lait = 'assets/images/categories/lait.png';
+  static const huile = 'assets/images/categories/huile.png';
+  static const riz = 'assets/images/categories/riz.png';
+  static const savon = 'assets/images/categories/savon.png';
+  static const jus = 'assets/images/categories/jus.png';
 
   static String bannerPhotoAt(int index) {
     const photos = [
-      bannerBasket,
+      homeBanner,
       'assets/images/categories/epicerie.png',
       'assets/images/categories/boissons.png',
     ];
@@ -18,11 +24,22 @@ class HeynMedia {
   }
 
   static String categoryPhoto(String categoryId) {
-    return switch (categoryId) {
-      'jus' || 'eau' => 'assets/images/categories/boissons.png',
-      'dattes' => 'assets/images/categories/fruits.png',
-      'riz' || 'huile' => 'assets/images/categories/epicerie.png',
-      _ => 'assets/images/categories/boulangerie.png',
+    return categoryPhotoOverride(categoryId) ??
+        switch (categoryId) {
+          'eau' => 'assets/images/categories/boissons.png',
+          'dattes' => 'assets/images/categories/fruits.png',
+          _ => 'assets/images/categories/boulangerie.png',
+        };
+  }
+
+  static String? categoryPhotoOverride(String categoryId) {
+    return switch (categoryId.trim().toLowerCase()) {
+      'lait' || 'dairy' || 'fromage' || 'alban' || 'aliments-laitiers' => lait,
+      'huile' || 'oils_ghee' || 'oil' => huile,
+      'riz' || 'rice_grains' || 'arroz' => riz,
+      'savon' || 'cleaning' || 'lessive' => savon,
+      'jus' || 'boissons' => jus,
+      _ => null,
     };
   }
 

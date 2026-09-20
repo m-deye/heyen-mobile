@@ -31,9 +31,7 @@ class OrderNotificationService {
   }
 
   /// Ouvre le canal support WhatsApp, sans numéro client de repli.
-  Future<bool> openSupport({
-    String message = 'Bonjour Heyn, j’ai besoin d’aide.',
-  }) async {
+  Future<bool> openSupport({required String message}) async {
     final support = targetPhone;
     if (support.isEmpty) {
       return false;

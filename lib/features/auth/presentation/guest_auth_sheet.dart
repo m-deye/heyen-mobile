@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import '../../../l10n/app_localizations.dart';
 import '../../../theme/heyn_colors.dart';
 import '../application/auth_session_controller.dart';
 
@@ -147,10 +148,7 @@ class _GuestAuthSheetState extends ConsumerState<GuestAuthSheet> {
 
     final result = await ref
         .read(authSessionControllerProvider.notifier)
-        .loginAttempt(
-          phone: _localPhone,
-          password: _passwordController.text,
-        );
+        .loginAttempt(phone: _localPhone, password: _passwordController.text);
 
     if (!mounted) {
       return;
@@ -163,7 +161,7 @@ class _GuestAuthSheetState extends ConsumerState<GuestAuthSheet> {
       case LoginAttemptResult.accountNotFound:
         setState(() {
           _isLoading = false;
-          _inlineError = 'Identifiants incorrects.';
+          _inlineError = AppLocalizations.of(context).authInvalidCredentials;
         });
         _passwordFocus.requestFocus();
     }
@@ -175,118 +173,116 @@ class _GuestAuthSheetState extends ConsumerState<GuestAuthSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Container(
       decoration: const BoxDecoration(
         borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [
-            Color(0xFFEDF4F7),
-            Color(0xFFF7FAFC),
-            Colors.white,
-          ],
+          colors: [Color(0xFFEDF4F7), Color(0xFFF7FAFC), Colors.white],
         ),
       ),
       child: SafeArea(
-      top: false,
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Center(
-              child: Container(
-                width: 40,
-                height: 4,
-                margin: const EdgeInsets.only(bottom: 12),
-                decoration: BoxDecoration(
-                  color: _track,
-                  borderRadius: BorderRadius.circular(99),
+        top: false,
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.fromLTRB(24, 8, 24, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Center(
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 12),
+                  decoration: BoxDecoration(
+                    color: _track,
+                    borderRadius: BorderRadius.circular(99),
+                  ),
                 ),
               ),
-            ),
-            Align(
-              alignment: Alignment.centerRight,
-              child: IconButton(
-                key: const Key('login-back'),
-                tooltip: 'Fermer',
-                onPressed: () => _popWith(GuestAuthSheetResult.dismissed),
-                icon: const Icon(Icons.close, color: _navy),
+              Align(
+                alignment: Alignment.centerRight,
+                child: IconButton(
+                  key: const Key('login-back'),
+                  tooltip: l10n.commonClose,
+                  onPressed: () => _popWith(GuestAuthSheetResult.dismissed),
+                  icon: const Icon(Icons.close, color: _navy),
+                ),
               ),
-            ),
-            _ProgressBars(complete: _step != GuestAuthStep.phoneStep),
-            const SizedBox(height: 22),
-            AnimatedSize(
-              duration: _switchDuration,
-              curve: Curves.easeOutCubic,
-              alignment: Alignment.topCenter,
-              child: _step == GuestAuthStep.phoneStep
-                  ? const SizedBox.shrink()
-                  : _CompactPhoneSummary(
-                      phone: _formattedPhone,
-                      onEdit: () => _goTo(GuestAuthStep.phoneStep),
-                    ),
-            ),
-            AnimatedSwitcher(
-              duration: _switchDuration,
-              switchInCurve: Curves.easeOutCubic,
-              switchOutCurve: Curves.easeInCubic,
-              transitionBuilder: (child, animation) {
-                final offset = Tween<Offset>(
-                  begin: const Offset(0, 0.12),
-                  end: Offset.zero,
-                ).animate(animation);
-                return FadeTransition(
-                  opacity: animation,
-                  child: SlideTransition(position: offset, child: child),
-                );
-              },
-              layoutBuilder: (currentChild, previousChildren) {
-                return Stack(
-                  alignment: Alignment.topCenter,
-                  children: [
-                    ...previousChildren,
-                    if (currentChild != null) currentChild,
-                  ],
-                );
-              },
-              child: KeyedSubtree(
-                key: ValueKey(_step.name),
-                child: switch (_step) {
-                  GuestAuthStep.phoneStep => _PhoneStep(
-                    controller: _phoneController,
-                    focusNode: _phoneFocus,
-                    complete: _phoneComplete,
-                    isLoading: _isLoading,
-                    onChanged: (_) => setState(() => _inlineError = null),
-                    onContinue: _continueFromPhone,
-                  ),
-                  GuestAuthStep.passwordStep => _PasswordStep(
-                    controller: _passwordController,
-                    focusNode: _passwordFocus,
-                    obscure: _obscurePassword,
-                    isLoading: _isLoading,
-                    error: _inlineError,
-                    onToggleObscure: () {
-                      setState(() => _obscurePassword = !_obscurePassword);
-                    },
-                    onChanged: (_) => setState(() => _inlineError = null),
-                    onForgot: () => _popWith(GuestAuthSheetResult.forgotPassword),
-                    onSubmit: _submitPassword,
-                  ),
+              _ProgressBars(complete: _step != GuestAuthStep.phoneStep),
+              const SizedBox(height: 22),
+              AnimatedSize(
+                duration: _switchDuration,
+                curve: Curves.easeOutCubic,
+                alignment: Alignment.topCenter,
+                child: _step == GuestAuthStep.phoneStep
+                    ? const SizedBox.shrink()
+                    : _CompactPhoneSummary(
+                        phone: _formattedPhone,
+                        onEdit: () => _goTo(GuestAuthStep.phoneStep),
+                      ),
+              ),
+              AnimatedSwitcher(
+                duration: _switchDuration,
+                switchInCurve: Curves.easeOutCubic,
+                switchOutCurve: Curves.easeInCubic,
+                transitionBuilder: (child, animation) {
+                  final offset = Tween<Offset>(
+                    begin: const Offset(0, 0.12),
+                    end: Offset.zero,
+                  ).animate(animation);
+                  return FadeTransition(
+                    opacity: animation,
+                    child: SlideTransition(position: offset, child: child),
+                  );
                 },
+                layoutBuilder: (currentChild, previousChildren) {
+                  return Stack(
+                    alignment: Alignment.topCenter,
+                    children: [
+                      ...previousChildren,
+                      if (currentChild != null) currentChild,
+                    ],
+                  );
+                },
+                child: KeyedSubtree(
+                  key: ValueKey(_step.name),
+                  child: switch (_step) {
+                    GuestAuthStep.phoneStep => _PhoneStep(
+                      controller: _phoneController,
+                      focusNode: _phoneFocus,
+                      complete: _phoneComplete,
+                      isLoading: _isLoading,
+                      onChanged: (_) => setState(() => _inlineError = null),
+                      onContinue: _continueFromPhone,
+                    ),
+                    GuestAuthStep.passwordStep => _PasswordStep(
+                      controller: _passwordController,
+                      focusNode: _passwordFocus,
+                      obscure: _obscurePassword,
+                      isLoading: _isLoading,
+                      error: _inlineError,
+                      onToggleObscure: () {
+                        setState(() => _obscurePassword = !_obscurePassword);
+                      },
+                      onChanged: (_) => setState(() => _inlineError = null),
+                      onForgot: () =>
+                          _popWith(GuestAuthSheetResult.forgotPassword),
+                      onSubmit: _submitPassword,
+                    ),
+                  },
+                ),
               ),
-            ),
-            const SizedBox(height: 18),
-            _CreateAccountLink(
-              onTap: () => _popWith(GuestAuthSheetResult.createAccount),
-            ),
-          ],
+              const SizedBox(height: 18),
+              _CreateAccountLink(
+                onTap: () => _popWith(GuestAuthSheetResult.createAccount),
+              ),
+            ],
+          ),
         ),
       ),
-    ),
     );
   }
 }
@@ -342,6 +338,7 @@ class _CompactPhoneSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.only(bottom: 18),
       child: Row(
@@ -358,7 +355,7 @@ class _CompactPhoneSummary extends StatelessWidget {
           ),
           IconButton(
             key: const Key('guest-auth-edit-phone'),
-            tooltip: 'Modifier le numéro',
+            tooltip: l10n.guestEditPhone,
             onPressed: onEdit,
             icon: const Icon(Icons.edit_outlined, size: 18, color: _navy),
           ),
@@ -387,11 +384,12 @@ class _PhoneStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          'Quel est votre numéro ?',
+          l10n.guestPhoneTitle,
           style: GoogleFonts.playfairDisplay(
             fontSize: 28,
             fontWeight: FontWeight.w700,
@@ -401,7 +399,7 @@ class _PhoneStep extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         Text(
-          'On vérifiera si vous avez déjà un compte Heyn',
+          l10n.guestPhoneSubtitle,
           style: GoogleFonts.inter(
             fontSize: 14,
             fontWeight: FontWeight.w400,
@@ -472,7 +470,7 @@ class _PhoneStep extends StatelessWidget {
         const SizedBox(height: 28),
         _SheetButton(
           key: const Key('guest-auth-continue'),
-          label: 'Continuer',
+          label: l10n.commonContinue,
           enabled: complete && !isLoading,
           isLoading: isLoading,
           onPressed: onContinue,
@@ -507,11 +505,12 @@ class _PasswordStep extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          'Entrez votre mot de passe',
+          l10n.guestPasswordTitle,
           style: GoogleFonts.playfairDisplay(
             fontSize: 26,
             fontWeight: FontWeight.w700,
@@ -529,11 +528,9 @@ class _PasswordStep extends StatelessWidget {
           textInputAction: TextInputAction.done,
           onChanged: onChanged,
           onSubmitted: (_) => onSubmit(),
-          hint: 'Votre mot de passe',
+          hint: l10n.authYourPassword,
           suffix: IconButton(
-            tooltip: obscure
-                ? 'Afficher le mot de passe'
-                : 'Masquer le mot de passe',
+            tooltip: obscure ? l10n.authShowPassword : l10n.authHidePassword,
             onPressed: onToggleObscure,
             icon: Icon(
               obscure
@@ -559,7 +556,7 @@ class _PasswordStep extends StatelessWidget {
           child: TextButton(
             onPressed: onForgot,
             child: Text(
-              'Mot de passe oublié ?',
+              l10n.authForgotPasswordLink,
               style: GoogleFonts.inter(
                 fontSize: 13,
                 fontWeight: FontWeight.w700,
@@ -570,7 +567,7 @@ class _PasswordStep extends StatelessWidget {
         ),
         const SizedBox(height: 8),
         _SheetButton(
-          label: 'Se connecter',
+          label: l10n.authLogin,
           enabled: controller.text.isNotEmpty && !isLoading,
           isLoading: isLoading,
           onPressed: onSubmit,
@@ -587,12 +584,13 @@ class _CreateAccountLink extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Wrap(
       alignment: WrapAlignment.center,
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         Text(
-          'Pas encore de compte ? ',
+          l10n.guestNoAccount,
           style: GoogleFonts.inter(
             fontSize: 13,
             fontWeight: FontWeight.w400,
@@ -608,7 +606,7 @@ class _CreateAccountLink extends StatelessWidget {
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
           child: Text(
-            'Créer un compte',
+            l10n.authCreateAccount,
             style: GoogleFonts.inter(
               fontSize: 13,
               fontWeight: FontWeight.w700,
@@ -748,7 +746,11 @@ class _SheetButton extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 10),
-                  const Icon(Icons.arrow_forward, size: 18, color: Colors.white),
+                  const Icon(
+                    Icons.arrow_forward,
+                    size: 18,
+                    color: Colors.white,
+                  ),
                 ],
               ),
       ),

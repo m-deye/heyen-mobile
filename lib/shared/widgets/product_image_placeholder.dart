@@ -33,14 +33,14 @@ class ProductImagePlaceholder extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(
-            Icons.image_outlined,
-            color: AppColors.textMuted,
-            size: 30,
-          ),
+          Icon(Icons.image_outlined, color: AppColors.textMuted, size: 30),
           if (showLabel && label.isNotEmpty) ...[
             const SizedBox(height: 6),
-            Text(label, textAlign: TextAlign.center, style: AppTextStyles.caption),
+            Text(
+              label,
+              textAlign: TextAlign.center,
+              style: AppTextStyles.caption,
+            ),
           ],
         ],
       ),

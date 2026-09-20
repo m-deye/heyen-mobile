@@ -112,14 +112,12 @@ class CartController extends Notifier<List<OrderLine>> {
     }
   }
 
-  void clear() {
+  Future<void> clear() async {
     state = const [];
-    unawaited(
-      _runRemote((api) async {
-        await api.clear();
-        return const [];
-      }),
-    );
+    await _runRemote((api) async {
+      await api.clear();
+      return const [];
+    });
   }
 
   void replaceLines(List<OrderLine> lines) {

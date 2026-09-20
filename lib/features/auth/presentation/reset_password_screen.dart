@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../l10n/app_localizations.dart';
+import '../../../shared/localization/display_localizations.dart';
 import '../../../theme/heyn_theme.dart';
 import '../application/auth_session_controller.dart';
 import 'auth_chrome.dart';
@@ -54,20 +56,22 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
       return;
     }
     setState(() => _isLoading = false);
+    final l10n = AppLocalizations.of(context);
     if (error == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Mot de passe réinitialisé. Connectez-vous.'),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(l10n.authPasswordResetSuccess)));
       context.go('/login');
       return;
     }
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(localizedAuthError(error, l10n))));
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: AuthBackground(
@@ -81,10 +85,10 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                   children: [
                     const AuthLogoBadge(size: 96),
                     const SizedBox(height: 20),
-                    const HeynGoldTitle('Nouveau mot de passe', fontSize: 28),
+                    HeynGoldTitle(l10n.authNewPasswordTitle, fontSize: 28),
                     const SizedBox(height: 10),
                     Text(
-                      'Collez le code du lien (paramètre token). Le mot de passe doit avoir au moins 8 caractères.',
+                      l10n.authNewPasswordSubtitle,
                       textAlign: TextAlign.center,
                       style: HeynTextStyles.subtitle.copyWith(
                         color: HeynColors.nightPurple.withValues(alpha: 0.78),
@@ -105,7 +109,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                                 fontWeight: FontWeight.w600,
                               ),
                               decoration: authInputDecoration(
-                                hintText: 'Code / token',
+                                hintText: l10n.authCodeToken,
                                 prefixIcon: const Icon(
                                   Icons.key_outlined,
                                   color: HeynColors.textMuted,
@@ -123,7 +127,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                                 fontWeight: FontWeight.w600,
                               ),
                               decoration: authInputDecoration(
-                                hintText: 'Nouveau mot de passe',
+                                hintText: l10n.authNewPassword,
                                 suffixIcon: IconButton(
                                   onPressed: () {
                                     setState(
@@ -153,7 +157,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                                 fontWeight: FontWeight.w600,
                               ),
                               decoration: authInputDecoration(
-                                hintText: 'Confirmer',
+                                hintText: l10n.authConfirm,
                                 suffixIcon: IconButton(
                                   onPressed: () {
                                     setState(
@@ -172,7 +176,7 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                           ),
                           const SizedBox(height: 16),
                           AuthGradientButton(
-                            label: 'Enregistrer',
+                            label: l10n.commonSave,
                             isLoading: _isLoading,
                             onPressed: _isLoading ? null : _submit,
                           ),
@@ -182,8 +186,8 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                     const SizedBox(height: 18),
                     TextButton(
                       onPressed: () => context.go('/login'),
-                      child: const Text(
-                        'Retour à la connexion',
+                      child: Text(
+                        l10n.commonBackToLogin,
                         style: TextStyle(
                           color: HeynColors.goldDark,
                           fontWeight: FontWeight.w700,

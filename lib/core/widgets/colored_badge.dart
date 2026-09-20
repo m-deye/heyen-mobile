@@ -15,7 +15,12 @@ class ColoredBadge extends StatelessWidget {
   final ChipPalette palette;
   final VoidCallback? onTap;
 
-  factory ColoredBadge.cycling(String label, int index, {Key? key, VoidCallback? onTap}) {
+  factory ColoredBadge.cycling(
+    String label,
+    int index, {
+    Key? key,
+    VoidCallback? onTap,
+  }) {
     return ColoredBadge(
       key: key,
       label: label,
