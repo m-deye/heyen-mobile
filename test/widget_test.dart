@@ -603,21 +603,6 @@ void main() {
         find.byKey(const Key('checkout-landmark')),
         'Mosquée',
       );
-      await tester.scrollUntilVisible(
-        find.byKey(const Key('payment-bankily')),
-        300,
-        scrollable: verticalScrollable(const Key('checkout-scroll')),
-      );
-      await tester.pumpAndSettle();
-      await tester.tap(find.byKey(const Key('payment-bankily')));
-      await tester.pumpAndSettle();
-      await tester.scrollUntilVisible(
-        find.byKey(const Key('checkout-submit')),
-        300,
-        scrollable: verticalScrollable(const Key('checkout-scroll')),
-      );
-      await tester.pumpAndSettle();
-      await tester.ensureVisible(find.byKey(const Key('checkout-submit')));
       await tester.pumpAndSettle();
       await tester.tap(find.byKey(const Key('checkout-submit')));
       await tester.pumpAndSettle();
@@ -754,13 +739,6 @@ void main() {
       find.byKey(const Key('checkout-landmark')),
       'Marché capital',
     );
-    await tester.scrollUntilVisible(
-      find.byKey(const Key('checkout-submit')),
-      300,
-      scrollable: verticalScrollable(const Key('checkout-scroll')),
-    );
-    await tester.pumpAndSettle();
-    await tester.ensureVisible(find.byKey(const Key('checkout-submit')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('checkout-submit')));
     await tester.pumpAndSettle();

@@ -1130,10 +1130,16 @@ abstract class AppLocalizations {
   /// **'Exemple : appelez-moi à l\'arrivée'**
   String get checkoutNotesHint;
 
+  /// No description provided for @checkoutAddressHint.
+  ///
+  /// In fr, this message translates to:
+  /// **'Saisissez votre adresse'**
+  String get checkoutAddressHint;
+
   /// No description provided for @checkoutCompleteLocationError.
   ///
   /// In fr, this message translates to:
-  /// **'Indiquez un quartier et un repère de livraison.'**
+  /// **'Indiquez votre adresse de livraison.'**
   String get checkoutCompleteLocationError;
 
   /// No description provided for @checkoutPhoneError.

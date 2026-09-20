@@ -578,8 +578,11 @@ class AppLocalizationsFr extends AppLocalizations {
   String get checkoutNotesHint => 'Exemple : appelez-moi à l\'arrivée';
 
   @override
+  String get checkoutAddressHint => 'Saisissez votre adresse';
+
+  @override
   String get checkoutCompleteLocationError =>
-      'Indiquez un quartier et un repère de livraison.';
+      'Indiquez votre adresse de livraison.';
 
   @override
   String get checkoutPhoneError => 'Indiquez votre numéro de téléphone.';

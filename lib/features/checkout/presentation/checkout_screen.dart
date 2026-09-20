@@ -135,76 +135,66 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
               onAvatar: () => context.go('/profile'),
             ),
             Expanded(
-              child: Stack(
-                children: [
-                  SingleChildScrollView(
-                    key: const Key('checkout-scroll'),
-                    padding: const EdgeInsetsDirectional.fromSTEB(
-                      20,
-                      8,
-                      20,
-                      160,
+              child: SingleChildScrollView(
+                key: const Key('checkout-scroll'),
+                padding: const EdgeInsetsDirectional.fromSTEB(20, 8, 20, 24),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (isQuote) ...[
+                      _CheckoutSectionCard(
+                        title: l10n.authShopName,
+                        child: _CheckoutTextField(
+                          fieldKey: const Key('checkout-shop'),
+                          controller: _shopNameController,
+                          hintText: l10n.checkoutShopExample,
+                          icon: Icons.storefront_outlined,
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                    ],
+                    _DeliveryAddressCard(
+                      location: _location,
+                      landmarkController: _landmarkController,
+                      phoneController: _phoneController,
+                      onChanged: (value) => setState(() => _location = value),
                     ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        if (isQuote) ...[
-                          _CheckoutSectionCard(
-                            title: l10n.authShopName,
-                            child: _CheckoutTextField(
-                              fieldKey: const Key('checkout-shop'),
-                              controller: _shopNameController,
-                              hintText: l10n.checkoutShopExample,
-                              icon: Icons.storefront_outlined,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                        ],
-                        _DeliveryAddressCard(
-                          location: _location,
-                          landmarkController: _landmarkController,
-                          phoneController: _phoneController,
-                          onChanged: (value) =>
-                              setState(() => _location = value),
-                        ),
-                        const SizedBox(height: 16),
-                        _DeliveryTimeCard(
-                          selected: _deliverySlot,
-                          onSelected: (value) =>
-                              setState(() => _deliverySlot = value),
-                        ),
-                        if (!isQuote) ...[
-                          const SizedBox(height: 16),
-                          _PaymentCard(
-                            selected: _paymentMethod,
-                            onSelected: (value) =>
-                                setState(() => _paymentMethod = value),
-                          ),
-                        ],
-                        const SizedBox(height: 16),
-                        _CheckoutSectionCard(
-                          title: l10n.checkoutNotesTitle,
-                          child: _CheckoutTextField(
-                            controller: _notesController,
-                            hintText: l10n.checkoutNotesHint,
-                            icon: Icons.notes_rounded,
-                            minLines: 3,
-                            maxLines: 4,
-                          ),
-                        ),
-                      ],
+                    const SizedBox(height: 16),
+                    _DeliveryTimeCard(
+                      selected: _deliverySlot,
+                      onSelected: (value) =>
+                          setState(() => _deliverySlot = value),
                     ),
-                  ),
-                  _StickyConfirmButton(
-                    key: const Key('checkout-submit'),
-                    label: isQuote
-                        ? l10n.checkoutSubmitQuote
-                        : l10n.checkoutConfirmAndPay,
-                    isLoading: _submitting,
-                    onPressed: _submitting ? null : _submit,
-                  ),
-                ],
+                    if (!isQuote) ...[
+                      const SizedBox(height: 16),
+                      _PaymentCard(
+                        selected: _paymentMethod,
+                        onSelected: (value) =>
+                            setState(() => _paymentMethod = value),
+                      ),
+                    ],
+                    const SizedBox(height: 16),
+                    _CheckoutSectionCard(
+                      title: l10n.checkoutNotesTitle,
+                      child: _CheckoutTextField(
+                        controller: _notesController,
+                        hintText: l10n.checkoutNotesHint,
+                        icon: Icons.notes_rounded,
+                        minLines: 3,
+                        maxLines: 4,
+                      ),
+                    ),
+                  ],
+                ),
               ),
+            ),
+            _StickyConfirmButton(
+              key: const Key('checkout-submit'),
+              label: isQuote
+                  ? l10n.checkoutSubmitQuote
+                  : l10n.checkoutConfirmAndPay,
+              isLoading: _submitting,
+              onPressed: _submitting ? null : _submit,
             ),
           ],
         ),
@@ -701,47 +691,23 @@ class _DeliveryAddressCard extends StatelessWidget {
       title: l10n.checkoutDeliveryAddress,
       child: Column(
         children: [
-          DropdownButtonFormField<String>(
-            initialValue: location.neighborhood,
-            isExpanded: true,
-            decoration: _fieldDecoration(
-              context,
-              icon: Icons.location_city_outlined,
-            ),
-            dropdownColor: AppColors.background,
-            style: HeynTextStyles.bodyMedium.copyWith(
-              color: AppColors.darkText,
-              fontWeight: FontWeight.w700,
-            ),
-            borderRadius: BorderRadius.circular(18),
-            items: [
-              for (final neighborhood in nouakchottNeighborhoods)
-                DropdownMenuItem(
-                  value: neighborhood.name,
-                  child: Text(neighborhood.name, textAlign: TextAlign.end),
-                ),
-            ],
-            onChanged: (value) {
-              final neighborhood = nouakchottNeighborhoods.firstWhere(
-                (item) => item.name == value,
-                orElse: () => nouakchottNeighborhoods.first,
-              );
-              onChanged(
-                location.copyWith(
-                  neighborhood: neighborhood.name,
-                  latitude: neighborhood.latitude,
-                  longitude: neighborhood.longitude,
-                ),
-              );
-            },
-          ),
-          const SizedBox(height: 12),
           _CheckoutTextField(
             fieldKey: const Key('checkout-landmark'),
             controller: landmarkController,
-            hintText: l10n.deliveryLandmark,
+            hintText: l10n.checkoutAddressHint,
             icon: Icons.location_on_outlined,
-            onChanged: (value) => onChanged(location.copyWith(landmark: value)),
+            minLines: 2,
+            maxLines: 3,
+            keyboardType: TextInputType.streetAddress,
+            textInputAction: TextInputAction.next,
+            onChanged: (value) => onChanged(
+              location.copyWith(
+                landmark: value,
+                neighborhood: value.trim().isEmpty
+                    ? location.neighborhood
+                    : value,
+              ),
+            ),
           ),
           const SizedBox(height: 12),
           _CheckoutTextField(
@@ -884,13 +850,6 @@ class _PaymentMethodTile extends StatelessWidget {
   final bool selected;
   final VoidCallback onTap;
 
-  IconData get _icon => switch (method) {
-    MobilePaymentMethod.bankily => Icons.account_balance_wallet_outlined,
-    MobilePaymentMethod.masrivi => Icons.phone_android_outlined,
-    MobilePaymentMethod.sedad => Icons.credit_card_outlined,
-    MobilePaymentMethod.cash => Icons.payments_outlined,
-  };
-
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
@@ -917,15 +876,7 @@ class _PaymentMethodTile extends StatelessWidget {
           ),
           child: Row(
             children: [
-              Container(
-                width: 46,
-                height: 46,
-                decoration: BoxDecoration(
-                  color: AppColors.lightTeal,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Icon(_icon, color: AppColors.primary, size: 24),
-              ),
+              _WalletBrandIcon(method: method),
               const SizedBox(width: 14),
               Expanded(
                 child: Column(
@@ -1090,6 +1041,48 @@ InputDecoration _fieldDecoration(
   );
 }
 
+class _WalletBrandIcon extends StatelessWidget {
+  const _WalletBrandIcon({required this.method});
+
+  final MobilePaymentMethod method;
+
+  @override
+  Widget build(BuildContext context) {
+    final style = switch (method) {
+      MobilePaymentMethod.bankily => (
+        color: const Color(0xFFE87722),
+        mark: 'B',
+      ),
+      MobilePaymentMethod.masrivi => (
+        color: const Color(0xFF128A4B),
+        mark: 'M',
+      ),
+      MobilePaymentMethod.sedad => (color: const Color(0xFF1B4F9C), mark: 'S'),
+      MobilePaymentMethod.cash => (color: AppColors.primary, mark: ''),
+    };
+
+    return Container(
+      width: 46,
+      height: 46,
+      decoration: BoxDecoration(
+        color: style.color,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      alignment: Alignment.center,
+      child: method == MobilePaymentMethod.cash
+          ? const Icon(Icons.payments_outlined, color: Colors.white, size: 24)
+          : Text(
+              style.mark,
+              style: HeynTextStyles.sectionTitle.copyWith(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.w900,
+              ),
+            ),
+    );
+  }
+}
+
 class _StickyConfirmButton extends StatelessWidget {
   const _StickyConfirmButton({
     super.key,
@@ -1104,10 +1097,8 @@ class _StickyConfirmButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PositionedDirectional(
-      start: 0,
-      end: 0,
-      bottom: 72,
+    return SafeArea(
+      top: false,
       child: DecoratedBox(
         decoration: const BoxDecoration(
           color: AppColors.scaffoldBackground,
@@ -1123,6 +1114,7 @@ class _StickyConfirmButton extends StatelessWidget {
           padding: const EdgeInsetsDirectional.fromSTEB(20, 14, 20, 16),
           child: SizedBox(
             height: 64,
+            width: double.infinity,
             child: FilledButton.icon(
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.primary,

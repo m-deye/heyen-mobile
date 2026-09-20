@@ -13,15 +13,14 @@ class DeliveryLocation {
   final double longitude;
   final String phone;
 
-  bool get isComplete =>
-      neighborhood.trim().isNotEmpty && landmark.trim().isNotEmpty;
+  bool get isComplete => landmark.trim().isNotEmpty;
 
   bool get hasPhone => phone.trim().isNotEmpty;
 
   String get formattedAddress {
-    final pin =
-        '${latitude.toStringAsFixed(5)}, ${longitude.toStringAsFixed(5)}';
-    final address = '$neighborhood — près de $landmark ($pin)';
+    final address = landmark.trim().isNotEmpty
+        ? landmark.trim()
+        : neighborhood.trim();
     if (!hasPhone) {
       return address;
     }
