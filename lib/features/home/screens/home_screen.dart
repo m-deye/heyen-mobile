@@ -33,9 +33,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   final _searchController = TextEditingController();
 
   @override
+  void initState() {
+    super.initState();
+    _searchController.addListener(_onSearchTextChanged);
+  }
+
+  @override
   void dispose() {
+    _searchController.removeListener(_onSearchTextChanged);
     _searchController.dispose();
     super.dispose();
+  }
+
+  void _onSearchTextChanged() {
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   String get _searchQuery => _searchController.text.trim();
@@ -60,6 +73,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final l10n = AppLocalizations.of(context);
     final categories = ref.watch(categoriesProvider);
     final products = ref.watch(productsProvider);
+    final searching = _searchQuery.isNotEmpty;
 
     return HeynBackground(
       child: SafeArea(
@@ -76,12 +90,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       .watch(orderNotificationsProvider)
                       .length,
                   onSearchChanged: (_) => setState(() {}),
-                  onSearchSubmitted: (query) {
-                    final encoded = Uri.encodeQueryComponent(query.trim());
-                    context.go(
-                      encoded.isEmpty ? '/catalog' : '/catalog?search=$encoded',
-                    );
-                  },
+                  onSearchSubmitted: (_) {},
                   onAvatarTap: () => requireAuthThen(
                     context: context,
                     ref: ref,
@@ -92,6 +101,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
             ),
+            if (!searching)
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
@@ -120,6 +130,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
             ),
+            if (!searching)
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
@@ -146,7 +157,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   children: [
                     Expanded(
                       child: Text(
-                        l10n.homePopularThisWeek,
+                        searching
+                            ? l10n.homeSearchResults
+                            : l10n.homePopularThisWeek,
                         style: HeynTextStyles.bodyMedium.copyWith(
                           fontWeight: FontWeight.w800,
                           fontSize: 18,
@@ -154,6 +167,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ),
                       ),
                     ),
+                    if (!searching)
                     TextButton(
                       onPressed: _openCatalog,
                       child: Text(
@@ -1054,11 +1068,17 @@ List<Product> _filterHomeProducts({
     for (final product in items)
       if ((selectedCategoryId == null ||
               product.categoryId == selectedCategoryId) &&
-          (needle.isEmpty ||
-              product.name.toLowerCase().contains(needle) ||
-              product.description.toLowerCase().contains(needle)))
+          (needle.isEmpty || _productMatchesQuery(product, needle)))
         product,
   ];
+}
+
+bool _productMatchesQuery(Product product, String needle) {
+  return product.name.toLowerCase().contains(needle) ||
+      product.description.toLowerCase().contains(needle) ||
+      product.details.toLowerCase().contains(needle) ||
+      product.categoryId.toLowerCase().contains(needle) ||
+      product.imageLabel.toLowerCase().contains(needle);
 }
 
 class _PopularList extends StatelessWidget {
@@ -1103,6 +1123,31 @@ class _PopularList extends StatelessWidget {
                   ? l10n.homeNoProducts
                   : l10n.commonNoResultsFor(searchQuery),
               icon: Icons.inventory_2_outlined,
+            ),
+          );
+        }
+        if (searchQuery.trim().isNotEmpty) {
+          return Padding(
+            padding: const EdgeInsets.fromLTRB(20, 0, 20, 0),
+            child: GridView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: filtered.length,
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                mainAxisExtent: 214,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+              ),
+              itemBuilder: (context, i) {
+                return _HeynProductCard(
+                  key: ValueKey('home-search-${filtered[i].id}'),
+                  product: filtered[i],
+                  index: i,
+                  onTap: () => onOpen(filtered[i]),
+                  onAdd: () => onAdd(filtered[i]),
+                );
+              },
             ),
           );
         }

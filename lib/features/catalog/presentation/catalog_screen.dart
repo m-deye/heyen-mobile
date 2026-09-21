@@ -38,6 +38,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
   void initState() {
     super.initState();
     _searchController = TextEditingController(text: widget.searchQuery ?? '');
+    _searchController.addListener(_onSearchTextChanged);
   }
 
   @override
@@ -52,8 +53,15 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
 
   @override
   void dispose() {
+    _searchController.removeListener(_onSearchTextChanged);
     _searchController.dispose();
     super.dispose();
+  }
+
+  void _onSearchTextChanged() {
+    if (mounted) {
+      setState(() {});
+    }
   }
 
   String get _searchQuery => _searchController.text.trim();
@@ -84,7 +92,10 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
         }
         final needle = _searchQuery.toLowerCase();
         return product.name.toLowerCase().contains(needle) ||
-            product.description.toLowerCase().contains(needle);
+            product.description.toLowerCase().contains(needle) ||
+            product.details.toLowerCase().contains(needle) ||
+            product.categoryId.toLowerCase().contains(needle) ||
+            product.imageLabel.toLowerCase().contains(needle);
       }).toList(),
     );
     final isLoading = categoriesState.isLoading || productsState.isLoading;

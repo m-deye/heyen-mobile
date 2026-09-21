@@ -23,6 +23,7 @@
   "commonRemove": "Retirer",
   "commonBackToLogin": "Retour à la connexion",
   "commonSearchProduct": "Rechercher un produit...",
+  "homeSearchResults": "Résultats",
   "commonClear": "Effacer",
   "commonProductCount": "{count, plural, =0{0 produit} =1{1 produit} other{{count} produits}}",
   "@commonProductCount": {

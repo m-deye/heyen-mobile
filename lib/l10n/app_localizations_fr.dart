@@ -79,6 +79,9 @@ class AppLocalizationsFr extends AppLocalizations {
   String get commonSearchProduct => 'Rechercher un produit...';
 
   @override
+  String get homeSearchResults => 'Résultats';
+
+  @override
   String get commonClear => 'Effacer';
 
   @override

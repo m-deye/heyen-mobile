@@ -23,6 +23,7 @@
   "commonRemove": "إزالة",
   "commonBackToLogin": "العودة إلى تسجيل الدخول",
   "commonSearchProduct": "إبحث عن منتج...",
+  "homeSearchResults": "النتائج",
   "commonClear": "مسح",
   "commonProductCount": "{count, plural, =0{0 منتج} =1{منتج واحد} =2{منتجان} few{{count} منتجات} many{{count} منتجا} other{{count} منتج}}",
   "@commonProductCount": {

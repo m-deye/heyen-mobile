@@ -78,6 +78,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get commonSearchProduct => 'إبحث عن منتج...';
 
   @override
+  String get homeSearchResults => 'النتائج';
+
+  @override
   String get commonClear => 'مسح';
 
   @override

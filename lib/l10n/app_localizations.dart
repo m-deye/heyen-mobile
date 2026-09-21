@@ -236,6 +236,12 @@ abstract class AppLocalizations {
   /// **'Rechercher un produit...'**
   String get commonSearchProduct;
 
+  /// No description provided for @homeSearchResults.
+  ///
+  /// In fr, this message translates to:
+  /// **'Résultats'**
+  String get homeSearchResults;
+
   /// No description provided for @commonClear.
   ///
   /// In fr, this message translates to:
