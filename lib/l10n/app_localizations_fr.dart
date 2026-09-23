@@ -560,6 +560,12 @@ class AppLocalizationsFr extends AppLocalizations {
   String get checkoutDeliveryTime => 'Créneau de livraison';
 
   @override
+  String get checkoutDeliveryDate => 'Date';
+
+  @override
+  String get checkoutDeliveryHour => 'Heure';
+
+  @override
   String get checkoutToday => 'Aujourd\'hui';
 
   @override

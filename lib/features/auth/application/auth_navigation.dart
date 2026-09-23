@@ -19,6 +19,8 @@ const _authPrefixes = [
 bool isProtectedLocation(String location) {
   return location == '/cart' ||
       location.startsWith('/cart/') ||
+      location == '/checkout' ||
+      location.startsWith('/checkout/') ||
       location == '/orders' ||
       location.startsWith('/orders/') ||
       location == '/profile' ||

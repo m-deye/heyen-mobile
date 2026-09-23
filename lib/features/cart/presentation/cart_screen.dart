@@ -77,7 +77,7 @@ class CartScreen extends ConsumerWidget {
                 totalLabel: formatOuguiya(finalTotal),
                 onPressed: () {
                   ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                  context.go('/cart/checkout');
+                  context.push('/checkout');
                 },
               ),
           ],

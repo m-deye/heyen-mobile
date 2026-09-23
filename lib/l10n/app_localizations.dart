@@ -1094,6 +1094,18 @@ abstract class AppLocalizations {
   /// **'Créneau de livraison'**
   String get checkoutDeliveryTime;
 
+  /// No description provided for @checkoutDeliveryDate.
+  ///
+  /// In fr, this message translates to:
+  /// **'Date'**
+  String get checkoutDeliveryDate;
+
+  /// No description provided for @checkoutDeliveryHour.
+  ///
+  /// In fr, this message translates to:
+  /// **'Heure'**
+  String get checkoutDeliveryHour;
+
   /// No description provided for @checkoutToday.
   ///
   /// In fr, this message translates to:

@@ -100,6 +100,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
           );
         },
       ),
+      GoRoute(
+        path: '/checkout',
+        builder: (context, state) => const CheckoutScreen(),
+      ),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) {
           return AppShell(navigationShell: navigationShell);
@@ -141,12 +145,6 @@ final appRouterProvider = Provider<GoRouter>((ref) {
               GoRoute(
                 path: '/cart',
                 builder: (context, state) => const CartScreen(),
-                routes: [
-                  GoRoute(
-                    path: 'checkout',
-                    builder: (context, state) => const CheckoutScreen(),
-                  ),
-                ],
               ),
             ],
           ),

@@ -195,6 +195,8 @@
   "checkoutConfirmAndPay": "Confirmer et payer",
   "checkoutDeliveryAddress": "Adresse de livraison",
   "checkoutDeliveryTime": "Créneau de livraison",
+  "checkoutDeliveryDate": "Date",
+  "checkoutDeliveryHour": "Heure",
   "checkoutToday": "Aujourd'hui",
   "checkoutTomorrow": "Demain",
   "checkoutTimeWindowToday": "9:00 - 12:00",

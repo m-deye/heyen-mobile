@@ -551,6 +551,12 @@ class AppLocalizationsAr extends AppLocalizations {
   String get checkoutDeliveryTime => 'موعد التوصيل';
 
   @override
+  String get checkoutDeliveryDate => 'التاريخ';
+
+  @override
+  String get checkoutDeliveryHour => 'الساعة';
+
+  @override
   String get checkoutToday => 'اليوم';
 
   @override

@@ -75,7 +75,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
     requireAuthThen(
       context: context,
       ref: ref,
-      redirect: '/cart/checkout',
+      redirect: '/checkout',
       addProduct: product,
       quantity: _quantity,
       action: PendingAuthAction.checkout,
@@ -83,7 +83,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         ref
             .read(cartControllerProvider.notifier)
             .addProduct(product, quantity: _quantity);
-        context.go('/cart/checkout');
+        context.push('/checkout');
       },
     );
   }

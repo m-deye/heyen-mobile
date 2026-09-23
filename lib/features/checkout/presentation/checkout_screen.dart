@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 import '../../../core/api/api_client.dart';
 import '../../../core/api/api_config.dart';
@@ -58,7 +59,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
   late final TextEditingController _landmarkController;
   late final TextEditingController _phoneController;
   late final TextEditingController _notesController;
-  var _deliverySlot = _DeliverySlot.today;
+  late DateTime _deliveryAt;
   var _submitting = false;
 
   @override
@@ -80,6 +81,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
     _landmarkController = TextEditingController(text: _location.landmark);
     _phoneController = TextEditingController(text: _location.phone);
     _notesController = TextEditingController();
+    _deliveryAt = _defaultDeliveryAt();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         ScaffoldMessenger.of(context).hideCurrentSnackBar();
@@ -128,7 +130,8 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                   ? l10n.checkoutQuoteHeaderTitle
                   : l10n.checkoutOrderHeaderTitle,
               itemCountLabel: productLabel,
-              onBack: () => context.pop(),
+              onBack: () =>
+                  context.canPop() ? context.pop() : context.go('/cart'),
               onNotify: () => openNotifications(context, ref),
               notificationCount: ref.watch(orderNotificationsProvider).length,
               initials: user?.initials ?? 'H',
@@ -160,10 +163,9 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
                       onChanged: (value) => setState(() => _location = value),
                     ),
                     const SizedBox(height: 16),
-                    _DeliveryTimeCard(
-                      selected: _deliverySlot,
-                      onSelected: (value) =>
-                          setState(() => _deliverySlot = value),
+                    _DeliveryScheduleCard(
+                      value: _deliveryAt,
+                      onChanged: (value) => setState(() => _deliveryAt = value),
                     ),
                     if (!isQuote) ...[
                       const SizedBox(height: 16),
@@ -295,7 +297,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
           message: message,
           clientPhone: contactPhone,
           reference: quote.id,
-          deliveryLabel: _deliverySlot.summary(l10n),
+          deliveryLabel: _formatDeliveryAt(context, _deliveryAt),
           totalLabel: formatOuguiya(total),
           isQuote: true,
         );
@@ -344,7 +346,7 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
         message: message,
         clientPhone: contactPhone,
         reference: order.id,
-        deliveryLabel: _deliverySlot.summary(l10n),
+        deliveryLabel: _formatDeliveryAt(context, _deliveryAt),
         totalLabel: formatOuguiya(total + _deliveryFeeFor(total)),
         isQuote: false,
       );
@@ -544,21 +546,21 @@ class _CheckoutScreenState extends ConsumerState<CheckoutScreen> {
 
 enum _CheckoutSuccessDestination { orders, home }
 
-enum _DeliverySlot {
-  today,
-  tomorrow;
+DateTime _defaultDeliveryAt() {
+  final now = DateTime.now();
+  var hour = now.minute > 0 ? now.hour + 1 : now.hour;
+  if (hour < 9) {
+    hour = 9;
+  }
+  if (hour > 20) {
+    return DateTime(now.year, now.month, now.day + 1, 9);
+  }
+  return DateTime(now.year, now.month, now.day, hour);
+}
 
-  String title(AppLocalizations l10n) => switch (this) {
-    _DeliverySlot.today => l10n.checkoutToday,
-    _DeliverySlot.tomorrow => l10n.checkoutTomorrow,
-  };
-
-  String time(AppLocalizations l10n) => switch (this) {
-    _DeliverySlot.today => l10n.checkoutTimeWindowToday,
-    _DeliverySlot.tomorrow => l10n.checkoutTimeWindowTomorrow,
-  };
-
-  String summary(AppLocalizations l10n) => '${title(l10n)} · ${time(l10n)}';
+String _formatDeliveryAt(BuildContext context, DateTime value) {
+  final locale = Localizations.localeOf(context).toString();
+  return '${DateFormat.yMMMEd(locale).format(value)} · ${DateFormat.Hm(locale).format(value)}';
 }
 
 class _CheckoutTopBar extends StatelessWidget {
@@ -727,82 +729,121 @@ class _DeliveryAddressCard extends StatelessWidget {
   }
 }
 
-class _DeliveryTimeCard extends StatelessWidget {
-  const _DeliveryTimeCard({required this.selected, required this.onSelected});
+class _DeliveryScheduleCard extends StatelessWidget {
+  const _DeliveryScheduleCard({required this.value, required this.onChanged});
 
-  final _DeliverySlot selected;
-  final ValueChanged<_DeliverySlot> onSelected;
+  final DateTime value;
+  final ValueChanged<DateTime> onChanged;
+
+  Future<void> _pickDate(BuildContext context) async {
+    final now = DateTime.now();
+    final firstDate = DateTime(now.year, now.month, now.day);
+    final picked = await showDatePicker(
+      context: context,
+      initialDate: value.isBefore(firstDate) ? firstDate : value,
+      firstDate: firstDate,
+      lastDate: firstDate.add(const Duration(days: 30)),
+      helpText: AppLocalizations.of(context).checkoutDeliveryDate,
+    );
+    if (picked == null) {
+      return;
+    }
+    onChanged(
+      DateTime(picked.year, picked.month, picked.day, value.hour, value.minute),
+    );
+  }
+
+  Future<void> _pickTime(BuildContext context) async {
+    final picked = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(value),
+      helpText: AppLocalizations.of(context).checkoutDeliveryHour,
+      builder: (context, child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          child: child ?? const SizedBox.shrink(),
+        );
+      },
+    );
+    if (picked == null) {
+      return;
+    }
+    onChanged(
+      DateTime(value.year, value.month, value.day, picked.hour, picked.minute),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final locale = Localizations.localeOf(context).toString();
     return _CheckoutSectionCard(
       title: l10n.checkoutDeliveryTime,
-      child: Row(
+      child: Column(
         children: [
-          for (final slot in _DeliverySlot.values) ...[
-            Expanded(
-              child: _DeliverySlotTile(
-                slot: slot,
-                selected: selected == slot,
-                onTap: () => onSelected(slot),
-              ),
-            ),
-            if (slot != _DeliverySlot.values.last) const SizedBox(width: 12),
-          ],
+          _SchedulePickerTile(
+            fieldKey: const Key('checkout-delivery-date'),
+            label: l10n.checkoutDeliveryDate,
+            value: DateFormat.yMMMEd(locale).format(value),
+            icon: Icons.calendar_month_rounded,
+            onTap: () => _pickDate(context),
+          ),
+          const SizedBox(height: 12),
+          _SchedulePickerTile(
+            fieldKey: const Key('checkout-delivery-time'),
+            label: l10n.checkoutDeliveryHour,
+            value: DateFormat.Hm(locale).format(value),
+            icon: Icons.schedule_rounded,
+            onTap: () => _pickTime(context),
+          ),
         ],
       ),
     );
   }
 }
 
-class _DeliverySlotTile extends StatelessWidget {
-  const _DeliverySlotTile({
-    required this.slot,
-    required this.selected,
+class _SchedulePickerTile extends StatelessWidget {
+  const _SchedulePickerTile({
+    required this.fieldKey,
+    required this.label,
+    required this.value,
+    required this.icon,
     required this.onTap,
   });
 
-  final _DeliverySlot slot;
-  final bool selected;
+  final Key fieldKey;
+  final String label;
+  final String value;
+  final IconData icon;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context);
     return Material(
-      color: selected ? AppColors.primary : AppColors.background,
+      color: AppColors.background,
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
+        key: fieldKey,
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
-        child: Container(
-          height: 86,
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: selected ? AppColors.primary : AppColors.border,
-            ),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+        child: InputDecorator(
+          decoration: _fieldDecoration(context, icon: icon, hintText: label),
+          child: Row(
             children: [
-              Text(
-                slot.title(l10n),
-                textAlign: TextAlign.center,
-                style: HeynTextStyles.bodyMedium.copyWith(
-                  color: selected ? AppColors.background : AppColors.darkText,
-                  fontWeight: FontWeight.w800,
+              Expanded(
+                child: Text(
+                  value,
+                  style: HeynTextStyles.bodyMedium.copyWith(
+                    color: AppColors.darkText,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
-              const SizedBox(height: 8),
               Text(
-                slot.time(l10n),
-                textAlign: TextAlign.center,
+                label,
                 style: HeynTextStyles.caption.copyWith(
-                  color: selected ? AppColors.lightTeal : AppColors.mutedText,
-                  fontWeight: FontWeight.w700,
+                  color: AppColors.mutedText,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             ],

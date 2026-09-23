@@ -195,6 +195,8 @@
   "checkoutConfirmAndPay": "تأكيد ودفع",
   "checkoutDeliveryAddress": "عنوان التوصيل",
   "checkoutDeliveryTime": "موعد التوصيل",
+  "checkoutDeliveryDate": "التاريخ",
+  "checkoutDeliveryHour": "الساعة",
   "checkoutToday": "اليوم",
   "checkoutTomorrow": "غدا",
   "checkoutTimeWindowToday": "9:00 - 12:00",
