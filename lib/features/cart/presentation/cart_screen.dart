@@ -47,48 +47,39 @@ class CartScreen extends ConsumerWidget {
               onBack: () => context.canPop() ? context.pop() : context.go('/'),
             ),
             Expanded(
-              child: Stack(
+              child: ListView(
+                key: const Key('cart-scroll'),
+                padding: const EdgeInsetsDirectional.fromSTEB(20, 8, 20, 24),
                 children: [
-                  ListView(
-                    key: const Key('cart-scroll'),
-                    padding: EdgeInsetsDirectional.fromSTEB(
-                      20,
-                      8,
-                      20,
-                      lines.isEmpty ? 24 : 220,
+                  if (clientType.isCommercant) const _RecurringCartCard(),
+                  if (lines.isEmpty)
+                    const _EmptyCart()
+                  else ...[
+                    for (var i = 0; i < lines.length; i++)
+                      _CartLineCard(line: lines[i], index: i),
+                    const SizedBox(height: 12),
+                    const _CouponRow(),
+                    const SizedBox(height: 18),
+                    _CartSummaryCard(
+                      subtotal: subtotal,
+                      deliveryFee: deliveryFee,
+                      finalTotal: finalTotal,
                     ),
-                    children: [
-                      if (clientType.isCommercant) const _RecurringCartCard(),
-                      if (lines.isEmpty)
-                        const _EmptyCart()
-                      else ...[
-                        for (var i = 0; i < lines.length; i++)
-                          _CartLineCard(line: lines[i], index: i),
-                        const SizedBox(height: 12),
-                        const _CouponRow(),
-                        const SizedBox(height: 18),
-                        _CartSummaryCard(
-                          subtotal: subtotal,
-                          deliveryFee: deliveryFee,
-                          finalTotal: finalTotal,
-                        ),
-                      ],
-                    ],
-                  ),
-                  if (lines.isNotEmpty)
-                    _StickyCheckoutButton(
-                      label: clientType.isCommercant
-                          ? l10n.cartContinueQuote
-                          : l10n.cartPlaceOrder,
-                      totalLabel: formatOuguiya(finalTotal),
-                      onPressed: () {
-                        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                        context.go('/cart/checkout');
-                      },
-                    ),
+                  ],
                 ],
               ),
             ),
+            if (lines.isNotEmpty)
+              _StickyCheckoutButton(
+                label: clientType.isCommercant
+                    ? l10n.cartContinueQuote
+                    : l10n.cartPlaceOrder,
+                totalLabel: formatOuguiya(finalTotal),
+                onPressed: () {
+                  ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                  context.go('/cart/checkout');
+                },
+              ),
           ],
         ),
       ),
@@ -523,26 +514,23 @@ class _StickyCheckoutButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PositionedDirectional(
-      start: 0,
-      end: 0,
-      bottom: 58,
-      child: DecoratedBox(
-        decoration: const BoxDecoration(
-          color: AppColors.scaffoldBackground,
-          boxShadow: [
-            BoxShadow(
-              color: AppColors.shadow,
-              blurRadius: 18,
-              offset: Offset(0, -8),
-            ),
-          ],
-        ),
-        child: Padding(
-          padding: const EdgeInsetsDirectional.fromSTEB(20, 14, 20, 16),
-          child: SizedBox(
+    return DecoratedBox(
+      decoration: const BoxDecoration(
+        color: AppColors.scaffoldBackground,
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.shadow,
+            blurRadius: 18,
+            offset: Offset(0, -8),
+          ),
+        ],
+      ),
+      child: Padding(
+        padding: const EdgeInsetsDirectional.fromSTEB(20, 14, 20, 16),
+        child: SizedBox(
             height: 64,
             child: FilledButton(
+              key: const Key('cart-place-order'),
               style: FilledButton.styleFrom(
                 backgroundColor: AppColors.primary,
                 foregroundColor: AppColors.background,
@@ -580,8 +568,7 @@ class _StickyCheckoutButton extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
+      );
   }
 }
 

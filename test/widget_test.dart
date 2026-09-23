@@ -593,9 +593,9 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('Panier').last);
       await tester.pumpAndSettle();
-      await tester.ensureVisible(find.text('Passer la commande'));
+      await tester.pump(const Duration(seconds: 4));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('Passer la commande'));
+      await tester.tap(find.byKey(const Key('cart-place-order')));
       await tester.pumpAndSettle();
 
       expect(find.text('Confirmer votre commande'), findsOneWidget);
@@ -721,13 +721,7 @@ void main() {
     await tester.tap(find.text('Charger'));
     await tester.pumpAndSettle();
     expect(find.text('Riz premium 5 kg'), findsWidgets);
-    await tester.scrollUntilVisible(
-      find.text('Continuer vers le devis'),
-      400,
-      scrollable: verticalScrollable(const Key('cart-scroll')),
-    );
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Continuer vers le devis'));
+    await tester.tap(find.byKey(const Key('cart-place-order')));
     await tester.pumpAndSettle();
 
     expect(find.text('Devis gros avant commande'), findsOneWidget);
