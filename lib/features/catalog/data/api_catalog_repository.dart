@@ -113,10 +113,7 @@ class ApiCatalogRepository implements CatalogRepository {
         }
         return label.length <= 3 ? label : label.substring(0, 3);
       }(),
-      imageUrl: () {
-        final url = _readString(json, ['imageUrl', 'image_url', 'image']);
-        return url.isEmpty ? null : url;
-      }(),
+      imageUrl: _mediaUrl(json, ['imageUrl', 'image_url', 'image']),
     );
   }
 
@@ -143,7 +140,17 @@ class ApiCatalogRepository implements CatalogRepository {
     if (_readString(mapped, ['details']).isEmpty) {
       mapped['details'] = description;
     }
+    mapped['imageUrl'] = _mediaUrl(mapped, ['imageUrl', 'image_url', 'image']);
     return Product.fromJson(mapped);
+  }
+
+  String? _mediaUrl(Map<String, Object?> json, List<String> keys) {
+    final url = _readString(json, keys);
+    if (url.isEmpty) {
+      return null;
+    }
+    final resolved = resolveHeynMediaUrl(url, apiBaseUrl: _dio.options.baseUrl);
+    return resolved.isEmpty ? null : resolved;
   }
 
   String _readString(Map<String, Object?> json, List<String> keys) {

@@ -7,15 +7,33 @@ String resolveHeynApiBaseUrl() {
     return fromEnv.trim();
   }
 
-  if (kReleaseMode) {
-    return '';
+  return 'https://heyen-gust.vercel.app';
+}
+
+/// Makes backend media paths loadable on the current device.
+String resolveHeynMediaUrl(String raw, {String? apiBaseUrl}) {
+  final value = raw.trim();
+  if (value.isEmpty) {
+    return value;
   }
 
-  if (defaultTargetPlatform == TargetPlatform.android) {
-    return 'http://10.0.2.2:3000';
+  final base = (apiBaseUrl ?? resolveHeynApiBaseUrl()).replaceAll(
+    RegExp(r'/$'),
+    '',
+  );
+  final parsed = value.startsWith('/')
+      ? Uri.tryParse(base.isEmpty ? value : '$base$value')
+      : Uri.tryParse(value);
+  if (parsed == null || !parsed.hasScheme) {
+    return value;
   }
 
-  return 'http://127.0.0.1:3000';
+  if (defaultTargetPlatform == TargetPlatform.android &&
+      (parsed.host == 'localhost' || parsed.host == '127.0.0.1')) {
+    return parsed.replace(host: '10.0.2.2').toString();
+  }
+
+  return parsed.toString();
 }
 
 final apiConfigProvider = Provider<ApiConfig>((ref) {

@@ -13,6 +13,8 @@ class HeynMedia {
   static const riz = 'assets/images/categories/riz.png';
   static const savon = 'assets/images/categories/savon.png';
   static const jus = 'assets/images/categories/jus.png';
+  static const huileTournesol =
+      'assets/images/products/huile-tournesol-1l.png';
 
   static String bannerPhotoAt(int index) {
     const photos = [
@@ -30,6 +32,13 @@ class HeynMedia {
           'dattes' => 'assets/images/categories/fruits.png',
           _ => 'assets/images/categories/boulangerie.png',
         };
+  }
+
+  static String? productPhoto(String productId) {
+    return switch (productId.trim().toLowerCase()) {
+      'huile-tournesol-1l' || 'huile-tournesol-1-l' => huileTournesol,
+      _ => null,
+    };
   }
 
   static String? categoryPhotoOverride(String categoryId) {

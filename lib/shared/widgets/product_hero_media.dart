@@ -30,9 +30,17 @@ class ProductHeroMedia extends StatelessWidget {
   Widget build(BuildContext context) {
     final w = width ?? size;
     final h = height ?? size;
+    final asset = HeynMedia.productPhoto(product.id);
     final url = product.imageUrl;
     Widget child;
-    if (url != null && url.isNotEmpty) {
+    if (asset != null) {
+      child = HeynPhoto(
+        asset: asset,
+        width: double.infinity,
+        height: double.infinity,
+        fit: fit,
+      );
+    } else if (url != null && url.isNotEmpty) {
       child = Image.network(
         url,
         fit: fit,
