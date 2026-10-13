@@ -1,8 +1,10 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_text_styles.dart';
 import '../../core/api/api_exception.dart';
+import '../../core/api/api_json.dart';
 import '../../core/widgets/soft_card.dart';
 import '../../l10n/app_localizations.dart';
 
@@ -24,6 +26,9 @@ class ApiStateCard extends StatelessWidget {
         error is ApiNotConfiguredException ||
         errorText.contains('ApiNotConfiguredException') ||
         errorText.contains('API backend non configuree');
+    final unavailableMessage =
+        l10n?.apiBackendUnavailableMessage ??
+        'Verifiez la connexion ou la disponibilite du backend.';
     return ApiStateCard(
       title: isNotConfigured
           ? l10n?.apiBackendNotConfiguredTitle ?? 'API backend non configuree'
@@ -32,9 +37,22 @@ class ApiStateCard extends StatelessWidget {
       message: isNotConfigured
           ? l10n?.apiBackendNotConfiguredMessage ??
                 'Ajoutez HEYN_API_BASE_URL avec l URL du backend Django pour charger les donnees reelles.'
-          : l10n?.apiBackendUnavailableMessage ??
-                'Verifiez la connexion ou la disponibilite du backend.',
+          : _httpErrorDetail(error) ?? unavailableMessage,
     );
+  }
+
+  /// Surfaces the HTTP status and backend message so a 401/5xx is not
+  /// mistaken for a network outage.
+  static String? _httpErrorDetail(Object error) {
+    if (error is! DioException) {
+      return null;
+    }
+    final status = error.response?.statusCode;
+    if (status == null) {
+      return null;
+    }
+    final message = apiErrorMessage(error.response?.data, fallback: '');
+    return message.isEmpty ? 'HTTP $status' : 'HTTP $status · $message';
   }
 
   @override

@@ -41,7 +41,9 @@ class ApiOrdersRepository implements OrdersRepository {
       );
       return unwrapApiList(response.data).map(Order.fromJson).toList();
     } on DioException catch (error) {
-      if (isApiUnreachable(error)) {
+      // Guest or local demo session: the backend has no orders for this
+      // device, so show an empty list instead of a connectivity error.
+      if (isApiUnreachable(error) || error.response?.statusCode == 401) {
         return const [];
       }
       rethrow;
