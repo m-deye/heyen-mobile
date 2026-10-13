@@ -102,8 +102,11 @@ class ApiCatalogRepository implements CatalogRepository {
 
   Category _categoryFromJson(Map<String, Object?> json) {
     final label = _readString(json, ['label', 'name']);
+    final slug = _readString(json, ['slug']);
+    final apiId = _readString(json, ['id']);
     return Category(
-      id: _readString(json, ['slug', 'id']),
+      id: slug.isNotEmpty ? slug : apiId,
+      apiId: apiId,
       label: label,
       description: _readString(json, ['description']),
       imageLabel: () {
@@ -141,7 +144,25 @@ class ApiCatalogRepository implements CatalogRepository {
       mapped['details'] = description;
     }
     mapped['imageUrl'] = _mediaUrl(mapped, ['imageUrl', 'image_url', 'image']);
+    final categorySlug = _nestedCategorySlug(mapped);
+    if (categorySlug.isNotEmpty) {
+      mapped['categoryId'] = categorySlug;
+      mapped['category_id'] = categorySlug;
+      mapped['categorySlug'] = categorySlug;
+    }
     return Product.fromJson(mapped);
+  }
+
+  String _nestedCategorySlug(Map<String, Object?> json) {
+    final category = json['category'];
+    if (category is Map) {
+      final nested = Map<String, Object?>.from(category);
+      final slug = _readString(nested, ['slug']);
+      if (slug.isNotEmpty) {
+        return slug;
+      }
+    }
+    return _readString(json, ['categorySlug', 'category_slug']);
   }
 
   String? _mediaUrl(Map<String, Object?> json, List<String> keys) {

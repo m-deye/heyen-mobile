@@ -187,6 +187,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               sliver: SliverToBoxAdapter(
                 child: _PopularList(
                   products: products,
+                  categories: categories.value ?? const [],
                   selectedCategoryId: _selectedCategoryId,
                   searchQuery: _searchQuery,
                   onSeeCategory: () {
@@ -863,7 +864,8 @@ class _CategoriesBlock extends StatelessWidget {
                     key: ValueKey('home-category-${category.id}'),
                     category: category,
                     label: localizedCategoryLabel(category, l10n),
-                    selected: selectedCategoryId == category.id,
+                    selected: selectedCategoryId != null &&
+                        category.matchesRef(selectedCategoryId!),
                     index: i,
                     onTap: () => onSelected(category.id),
                   );
@@ -1060,14 +1062,21 @@ class _CategoryImage extends StatelessWidget {
 
 List<Product> _filterHomeProducts({
   required List<Product> items,
+  required List<Category> categories,
   required String? selectedCategoryId,
   required String searchQuery,
 }) {
   final needle = searchQuery.toLowerCase();
+  final selected = selectedCategoryId == null
+      ? null
+      : categories
+            .where((category) => category.matchesRef(selectedCategoryId))
+            .firstOrNull;
   return [
     for (final product in items)
       if ((selectedCategoryId == null ||
-              product.categoryId == selectedCategoryId) &&
+              (selected?.matchesRef(product.categoryId) ??
+                  product.categoryId == selectedCategoryId)) &&
           (needle.isEmpty || _productMatchesQuery(product, needle)))
         product,
   ];
@@ -1084,6 +1093,7 @@ bool _productMatchesQuery(Product product, String needle) {
 class _PopularList extends StatelessWidget {
   const _PopularList({
     required this.products,
+    required this.categories,
     required this.selectedCategoryId,
     required this.searchQuery,
     required this.onOpen,
@@ -1094,6 +1104,7 @@ class _PopularList extends StatelessWidget {
   static const _popularLimit = 6;
 
   final AsyncValue<List<Product>> products;
+  final List<Category> categories;
   final String? selectedCategoryId;
   final String searchQuery;
   final ValueChanged<Product> onOpen;
@@ -1112,6 +1123,7 @@ class _PopularList extends StatelessWidget {
       data: (items) {
         final filtered = _filterHomeProducts(
           items: items,
+          categories: categories,
           selectedCategoryId: selectedCategoryId,
           searchQuery: searchQuery,
         );

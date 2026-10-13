@@ -48,6 +48,7 @@ class HeynMedia {
       'riz' || 'rice_grains' || 'arroz' => riz,
       'savon' || 'cleaning' || 'lessive' => savon,
       'jus' || 'boissons' => jus,
+      'epicerie' || 'épicerie' => huileTournesol,
       _ => null,
     };
   }

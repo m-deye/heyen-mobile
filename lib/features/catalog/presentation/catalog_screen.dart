@@ -76,14 +76,18 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
         .toList();
     final allProducts = productsState.value ?? const [];
     final selectedCategory = categories
-        .where((category) => category.id == widget.selectedCategoryId)
+        .where(
+          (category) =>
+              widget.selectedCategoryId != null &&
+              category.matchesRef(widget.selectedCategoryId!),
+        )
         .firstOrNull;
     final showingCategory = selectedCategory != null;
     final searching = _searchQuery.isNotEmpty;
     final products = _applyFilter(
       allProducts.where((product) {
         final inCategory =
-            !showingCategory || product.categoryId == selectedCategory.id;
+            !showingCategory || selectedCategory.matchesRef(product.categoryId);
         if (!inCategory) {
           return false;
         }
@@ -737,7 +741,8 @@ class _CategoryChips extends StatelessWidget {
           final category = categories[index - 1];
           return _CategoryChip(
             label: localizedCategoryLabel(category, l10n),
-            selected: selectedCategoryId == category.id,
+            selected: selectedCategoryId != null &&
+                category.matchesRef(selectedCategoryId!),
             onTap: () => onCategoryTap(category),
           );
         },

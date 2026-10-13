@@ -134,7 +134,7 @@ class _ProductDetailScreenState extends ConsumerState<ProductDetailScreen> {
         final categories = ref.watch(categoriesProvider).value ?? const [];
         final allProducts = ref.watch(productsProvider).value ?? const [];
         final categoryLabel = categories
-            .where((category) => category.id == product.categoryId)
+            .where((category) => category.matchesRef(product.categoryId))
             .map((category) => localizedCategoryLabel(category, l10n))
             .firstOrNull;
         final unitPrice = product.priceFor(clientType);
