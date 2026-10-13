@@ -97,22 +97,19 @@ Le dépôt GitHub affiche le **code source**, pas l’app en cours d’exécutio
 
 ## Connexion au backend
 
-L’URL de l’API est lue via `--dart-define=HEYN_API_BASE_URL`.  
-Si la variable n’est pas fournie, en **debug** l’app utilise :
+Par défaut, l’app mobile consomme le backend déployé :
 
-| Cible | URL par défaut |
-|---|---|
-| Émulateur Android | `http://10.0.2.2:3000` |
-| Desktop / iOS / Chrome | `http://127.0.0.1:3000` |
+```text
+https://heyen-gust.vercel.app
+```
 
-En **release**, aucune URL n’est définie tant que `HEYN_API_BASE_URL` n’est pas passé.
+L’URL peut encore être remplacée au lancement via `--dart-define=HEYN_API_BASE_URL=...` si besoin de tester un autre backend.
 
 ```bash
-# Émulateur Android → API sur la machine hôte
-flutter run --dart-define=HEYN_API_BASE_URL=http://10.0.2.2:3000
+flutter run
 
-# Windows / iOS simulateur / Chrome → API locale
-flutter run --dart-define=HEYN_API_BASE_URL=http://127.0.0.1:3000
+# Optionnel : forcer explicitement le backend déployé
+flutter run --dart-define=HEYN_API_BASE_URL=https://heyen-gust.vercel.app
 ```
 
 Le backend est **un autre dépôt**, typiquement :
