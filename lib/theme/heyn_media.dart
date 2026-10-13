@@ -19,8 +19,8 @@ class HeynMedia {
   static String bannerPhotoAt(int index) {
     const photos = [
       homeBanner,
-      'assets/images/categories/epicerie.png',
-      'assets/images/categories/boissons.png',
+      riz,
+      jus,
     ];
     return photos[index % photos.length];
   }
@@ -28,9 +28,9 @@ class HeynMedia {
   static String categoryPhoto(String categoryId) {
     return categoryPhotoOverride(categoryId) ??
         switch (categoryId) {
-          'eau' => 'assets/images/categories/boissons.png',
-          'dattes' => 'assets/images/categories/fruits.png',
-          _ => 'assets/images/categories/boulangerie.png',
+          'eau' => jus,
+          'dattes' => riz,
+          _ => homeBanner,
         };
   }
 
