@@ -259,8 +259,6 @@ class _GuestAuthSheetState extends ConsumerState<GuestAuthSheet> {
                         setState(() => _obscurePassword = !_obscurePassword);
                       },
                       onChanged: (_) => setState(() => _inlineError = null),
-                      onForgot: () =>
-                          _popWith(GuestAuthSheetResult.forgotPassword),
                       onSubmit: _submitPassword,
                     ),
                   },
@@ -480,7 +478,6 @@ class _PasswordStep extends StatelessWidget {
     required this.error,
     required this.onToggleObscure,
     required this.onChanged,
-    required this.onForgot,
     required this.onSubmit,
   });
 
@@ -491,7 +488,6 @@ class _PasswordStep extends StatelessWidget {
   final String? error;
   final VoidCallback onToggleObscure;
   final ValueChanged<String> onChanged;
-  final VoidCallback onForgot;
   final VoidCallback onSubmit;
 
   @override
@@ -542,21 +538,7 @@ class _PasswordStep extends StatelessWidget {
             ),
           ),
         ],
-        Align(
-          alignment: Alignment.centerRight,
-          child: TextButton(
-            onPressed: onForgot,
-            child: Text(
-              l10n.authForgotPasswordLink,
-              style: GoogleFonts.inter(
-                fontSize: 13,
-                fontWeight: FontWeight.w700,
-                color: _navy,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(height: 8),
+        const SizedBox(height: 20),
         _SheetButton(
           label: l10n.authLogin,
           enabled: controller.text.isNotEmpty && !isLoading,

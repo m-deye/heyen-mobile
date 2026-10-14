@@ -75,12 +75,23 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     ).showSnackBar(SnackBar(content: Text(localizedAuthError(error, l10n))));
   }
 
-  void _goToLogin() {
-    if (context.canPop()) {
-      context.pop();
+  void _selectType(ClientType type) {
+    if (type == _selectedType) {
       return;
     }
-    context.go('/login');
+    setState(() {
+      _selectedType = type;
+      _nameController.clear();
+      _phoneController.clear();
+      _shopController.clear();
+      _passwordController.clear();
+      _confirmController.clear();
+    });
+  }
+
+  void _goToLogin() {
+    final redirect = GoRouterState.of(context).uri.queryParameters['redirect'];
+    context.go(loginLocation(redirect: redirect));
   }
 
   @override
@@ -137,9 +148,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           const SizedBox(height: 10),
                           AuthClientTypeToggle(
                             selected: _selectedType,
-                            onSelected: (type) {
-                              setState(() => _selectedType = type);
-                            },
+                            onSelected: _selectType,
                           ),
                           const SizedBox(height: 16),
                           _GlassTextField(
@@ -171,7 +180,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                             hintText: l10n.authPassword,
                             obscureText: _obscurePassword,
                             textInputAction: TextInputAction.next,
-                            prefixIcon: Icons.lock_outline,
+                            prefixIcon: Icons.lock,
                             suffixIcon: IconButton(
                               tooltip: _obscurePassword
                                   ? l10n.authShowPassword
@@ -196,6 +205,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                             obscureText: _obscureConfirm,
                             textInputAction: TextInputAction.done,
                             onSubmitted: (_) => _isLoading ? null : _submit(),
+                            prefixIcon: Icons.verified_user_outlined,
                             suffixIcon: IconButton(
                               tooltip: _obscureConfirm
                                   ? l10n.authShowPassword

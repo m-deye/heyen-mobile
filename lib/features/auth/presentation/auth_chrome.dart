@@ -24,38 +24,15 @@ class AuthLogoBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: size,
       height: size,
-      padding: const EdgeInsets.all(3),
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        gradient: HeynColors.goldGradient,
-        boxShadow: [
-          BoxShadow(
-            color: HeynColors.goldDark.withValues(alpha: 0.35),
-            blurRadius: 18,
-            offset: const Offset(0, 8),
-          ),
-        ],
-      ),
-      child: DecoratedBox(
-        decoration: const BoxDecoration(
-          shape: BoxShape.circle,
-          color: HeynColors.nightPurple,
-        ),
-        child: Padding(
-          padding: EdgeInsets.all(size * 0.18),
-          child: Image.asset(
-            HeynLogoMark.logoPath,
-            fit: BoxFit.contain,
-            errorBuilder: (_, _, _) => Icon(
-              Icons.shopping_bag_outlined,
-              size: size * 0.38,
-              color: HeynColors.goldLight,
-            ),
-          ),
-        ),
+      child: Image.asset(
+        HeynLogoMark.logoPath,
+        fit: BoxFit.contain,
+        filterQuality: FilterQuality.high,
+        errorBuilder: (_, _, _) =>
+            PremiumLogo(fontSize: (size * 0.28).clamp(18.0, 32.0)),
       ),
     );
   }

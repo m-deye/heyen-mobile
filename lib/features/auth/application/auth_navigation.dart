@@ -133,7 +133,7 @@ Future<void> requireAuthThen({
     case GuestAuthSheetResult.createAccount:
       context.push(registerLocation(redirect: redirectTo));
     case GuestAuthSheetResult.forgotPassword:
-      context.push(forgotPasswordLocation(redirect: redirectTo));
+      context.go(loginLocation(redirect: redirectTo));
     case GuestAuthSheetResult.dismissed:
     case null:
       ref.read(pendingAuthIntentProvider.notifier).clear();

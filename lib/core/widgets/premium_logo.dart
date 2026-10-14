@@ -27,10 +27,13 @@ class HeynLogoMark extends StatelessWidget {
         child: Image.asset(
           logoPath,
           fit: BoxFit.contain,
-          errorBuilder: (_, _, _) => Icon(
-            Icons.shopping_bag_outlined,
-            size: iconSize ?? size * 0.48,
-            color: HeynColors.turquoise,
+          errorBuilder: (_, _, _) => Text(
+            'Heyn',
+            style: AppTextStyles.title.copyWith(
+              fontSize: iconSize ?? size * 0.28,
+              height: 1,
+              color: HeynColors.turquoise,
+            ),
           ),
         ),
       ),

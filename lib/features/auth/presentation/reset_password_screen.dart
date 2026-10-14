@@ -128,6 +128,10 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                               ),
                               decoration: authInputDecoration(
                                 hintText: l10n.authNewPassword,
+                                prefixIcon: const Icon(
+                                  Icons.lock,
+                                  color: HeynColors.goldDark,
+                                ),
                                 suffixIcon: IconButton(
                                   onPressed: () {
                                     setState(
@@ -158,6 +162,10 @@ class _ResetPasswordScreenState extends ConsumerState<ResetPasswordScreen> {
                               ),
                               decoration: authInputDecoration(
                                 hintText: l10n.authConfirm,
+                                prefixIcon: const Icon(
+                                  Icons.verified_user_outlined,
+                                  color: HeynColors.goldDark,
+                                ),
                                 suffixIcon: IconButton(
                                   onPressed: () {
                                     setState(

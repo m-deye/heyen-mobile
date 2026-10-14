@@ -57,6 +57,10 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         return _languageLocation(redirect: state.uri.toString());
       }
 
+      if (location == '/forgot-password' || location == '/reset-password') {
+        return '/login';
+      }
+
       if (isLoggedIn && onAuthRoute) {
         return pendingOrQueryRedirect(
               ref,
@@ -90,10 +94,12 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: '/forgot-password',
+        redirect: (context, state) => '/login',
         builder: (context, state) => const ForgotPasswordScreen(),
       ),
       GoRoute(
         path: '/reset-password',
+        redirect: (context, state) => '/login',
         builder: (context, state) {
           return ResetPasswordScreen(
             initialToken: state.uri.queryParameters['token'] ?? '',

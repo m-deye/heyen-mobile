@@ -365,8 +365,10 @@ void main() {
     expect(find.text('Se connecter'), findsOneWidget);
     expect(
       find.text('Se connecter avec un code de vérification'),
-      findsOneWidget,
+      findsNothing,
     );
+    expect(find.text('Mot de passe oublié ?'), findsNothing);
+    expect(find.text('Mot de passe oublié'), findsNothing);
     expect(find.text('Créer un nouveau compte'), findsOneWidget);
     expect(find.text('Passer'), findsOneWidget);
   });
@@ -401,23 +403,43 @@ void main() {
     expect(find.byKey(const Key('auth-skip')), findsOneWidget);
   });
 
-  testWidgets('verification code link opens the reset request screen', (
+  testWidgets('forgot password flow is hidden from login', (
     WidgetTester tester,
   ) async {
     await tester.pumpWidget(buildApp());
     await openLogin(tester);
 
-    await tester.ensureVisible(
+    expect(
       find.text('Se connecter avec un code de vérification'),
+      findsNothing,
     );
-    await tester.tap(find.text('Se connecter avec un code de vérification'));
+    expect(find.text('Mot de passe oublié ?'), findsNothing);
+    expect(find.text('Mot de passe oublié'), findsNothing);
+    expect(find.text('J\'ai déjà un code'), findsNothing);
+    expect(find.text('Envoyer le lien'), findsNothing);
+  });
+
+  testWidgets('register Se connecter returns to the login screen', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(buildApp());
+    await openLogin(tester);
+
+    await tester.ensureVisible(find.text('Créer un nouveau compte'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Créer un nouveau compte'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Mot de passe oublié'), findsOneWidget);
-    expect(find.text('Envoyer le lien'), findsOneWidget);
-    await tester.tap(find.text('Envoyer le lien'));
+    expect(find.text('Créer votre compte'), findsOneWidget);
+
+    await tester.ensureVisible(find.text('Se connecter'));
     await tester.pumpAndSettle();
-    expect(find.text('Indiquez une adresse email valide.'), findsOneWidget);
+    await tester.tap(find.text('Se connecter'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Bienvenue chez Heyn'), findsOneWidget);
+    expect(find.text('Créer votre compte'), findsNothing);
+    expect(find.text('Créer un nouveau compte'), findsOneWidget);
   });
 
   testWidgets('register creates a local account and opens the home shell', (
@@ -818,6 +840,7 @@ void main() {
       expect(find.text('Bienvenue ! Créons votre compte'), findsNothing);
       expect(find.byKey(const Key('guest-auth-name')), findsNothing);
       expect(find.byKey(const Key('guest-auth-password')), findsOneWidget);
+      expect(find.text('Mot de passe oublié ?'), findsNothing);
       expect(find.text('Créer votre compte'), findsNothing);
 
       await tester.tap(find.byKey(const Key('guest-auth-create-account')));

@@ -36,11 +36,13 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   }
 
   void _selectType(ClientType type) {
+    if (type == _selectedType) {
+      return;
+    }
     setState(() {
       _selectedType = type;
-      _phoneController.text = type.isCommercant
-          ? AuthSessionController.merchantTestPhone
-          : AuthSessionController.testPhone;
+      _phoneController.clear();
+      _passwordController.clear();
     });
   }
 
@@ -154,27 +156,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                                 ? l10n.authShowPassword
                                 : l10n.authHidePassword,
                           ),
-                          const SizedBox(height: 8),
-                          Align(
-                            alignment: AlignmentDirectional.centerEnd,
-                            child: TextButton(
-                              onPressed: () => context.push('/forgot-password'),
-                              style: TextButton.styleFrom(
-                                foregroundColor: AppColors.primary,
-                                padding: EdgeInsets.zero,
-                                minimumSize: const Size(0, 36),
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                              ),
-                              child: Text(
-                                l10n.authVerificationCodeLogin,
-                                style: HeynTextStyles.caption.copyWith(
-                                  color: AppColors.primary,
-                                  fontWeight: FontWeight.w700,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 24),
                           _LoginPrimaryButton(
                             label: l10n.authLogin,
                             isLoading: _isLoading,
@@ -316,9 +298,10 @@ class _LoginLogo extends StatelessWidget {
     return Center(
       child: Image.asset(
         HeynLogoMark.logoPath,
-        width: 68,
-        height: 68,
+        width: 112,
+        height: 112,
         fit: BoxFit.contain,
+        filterQuality: FilterQuality.high,
       ),
     );
   }
