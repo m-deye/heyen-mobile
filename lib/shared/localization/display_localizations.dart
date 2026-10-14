@@ -136,6 +136,10 @@ String localizedAuthError(String error, AppLocalizations l10n) {
     'Le mot de passe doit contenir au moins 8 caractères.' =>
       l10n.authPasswordMinEightError,
     'Indiquez votre nom et prénom.' => l10n.authEnterFirstLastNameError,
+    'Le prénom doit contenir au moins 2 caractères.' =>
+      l10n.authEnterFirstLastNameError,
+    'Le nom doit contenir au moins 2 caractères.' =>
+      l10n.authEnterFirstLastNameError,
     'Impossible de créer le compte.' => l10n.authCreateAccountError,
     'Le mot de passe doit contenir au moins 6 caractères.' =>
       l10n.authPasswordMinSixError,

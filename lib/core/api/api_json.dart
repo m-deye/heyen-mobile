@@ -65,8 +65,13 @@ String apiErrorMessage(
   addMessages(details['formErrors']);
   final fieldErrors = details['fieldErrors'];
   if (fieldErrors is Map) {
-    for (final value in fieldErrors.values) {
-      addMessages(value);
+    for (final entry in fieldErrors.entries) {
+      final french = frenchApiFieldError(entry.key.toString());
+      if (french != null) {
+        collected.add(french);
+      } else {
+        addMessages(entry.value);
+      }
     }
   }
 
@@ -76,4 +81,15 @@ String apiErrorMessage(
 
   final message = json['message']?.toString().trim() ?? '';
   return message.isEmpty ? fallback : message;
+}
+
+String? frenchApiFieldError(String field) {
+  return switch (field) {
+    'firstName' => 'Le prénom doit contenir au moins 2 caractères.',
+    'lastName' => 'Le nom doit contenir au moins 2 caractères.',
+    'phone' => 'Indiquez un numéro mauritanien à 8 chiffres.',
+    'password' => 'Le mot de passe doit contenir au moins 8 caractères.',
+    'accountType' => 'Choisissez Particulier ou Commerçant.',
+    _ => null,
+  };
 }

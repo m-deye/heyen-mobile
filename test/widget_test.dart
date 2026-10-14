@@ -94,7 +94,13 @@ void main() {
     required String phone,
     required String password,
   }) async {
-    await tester.enterText(textFieldByHint('Nom complet'), name);
+    final nameField = find.byKey(const Key('auth-register-name'));
+    await tester.enterText(
+      nameField.evaluate().isNotEmpty
+          ? nameField
+          : textFieldByHint('Nom complet'),
+      name,
+    );
     await tester.enterText(find.byKey(const Key('auth-register-phone')), phone);
     await tester.enterText(textFieldByHint('Mot de passe'), password);
     await tester.enterText(
@@ -463,6 +469,30 @@ void main() {
 
     expect(find.textContaining('Bonsoir, Fatima'), findsNothing);
     expect(find.text('Tevragh Zeina, Nouakchott'), findsNothing);
+  });
+
+  testWidgets('register accepts a single-word name like valal', (
+    WidgetTester tester,
+  ) async {
+    await tester.pumpWidget(buildApp());
+    await openLogin(tester);
+
+    await tester.ensureVisible(find.text('Créer un nouveau compte'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Créer un nouveau compte'));
+    await tester.pumpAndSettle();
+
+    await submitOfficialRegister(
+      tester,
+      name: 'valal',
+      phone: '55555556',
+      password: '66666666',
+    );
+    await openHome(tester);
+
+    expect(find.text('Créer votre compte'), findsNothing);
+    expect(find.text('Indiquez votre nom et prénom.'), findsNothing);
+    expect(find.text('Données invalides'), findsNothing);
   });
 
   testWidgets('manual login opens the main shell for valid credentials', (

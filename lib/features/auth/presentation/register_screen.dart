@@ -152,6 +152,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           ),
                           const SizedBox(height: 16),
                           _GlassTextField(
+                            fieldKey: const Key('auth-register-name'),
                             controller: _nameController,
                             hintText: l10n.authFullName,
                             textInputAction: TextInputAction.next,
@@ -307,6 +308,7 @@ class _RegisterPhoneField extends StatelessWidget {
 
 class _GlassTextField extends StatelessWidget {
   const _GlassTextField({
+    this.fieldKey,
     required this.controller,
     required this.hintText,
     this.keyboardType,
@@ -317,6 +319,7 @@ class _GlassTextField extends StatelessWidget {
     this.onSubmitted,
   });
 
+  final Key? fieldKey;
   final TextEditingController controller;
   final String hintText;
   final TextInputType? keyboardType;
@@ -330,6 +333,7 @@ class _GlassTextField extends StatelessWidget {
   Widget build(BuildContext context) {
     return AuthGlassField(
       child: TextField(
+        key: fieldKey,
         controller: controller,
         keyboardType: keyboardType,
         textInputAction: textInputAction,

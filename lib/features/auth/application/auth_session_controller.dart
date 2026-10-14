@@ -117,13 +117,8 @@ class AuthSessionController extends Notifier<User?> {
     final trimmedConfirm = confirmPassword.trim();
     final trimmedShop = shopName.trim();
 
-    final nameParts = name
-        .split(RegExp(r'\s+'))
-        .where((part) => part.isNotEmpty)
-        .toList();
-    if (nameParts.length < 2 ||
-        nameParts.first.length < 2 ||
-        nameParts.sublist(1).join(' ').length < 2) {
+    final nameParts = _registerNameParts(name);
+    if (nameParts == null) {
       return 'Indiquez votre nom et prénom.';
     }
 
@@ -151,8 +146,8 @@ class AuthSessionController extends Notifier<User?> {
               ref.read(dioProvider),
               ref.read(authTokenStoreProvider),
             ).register(
-              firstName: nameParts.first,
-              lastName: nameParts.sublist(1).join(' '),
+              firstName: nameParts.firstName,
+              lastName: nameParts.lastName,
               phone: formattedPhone,
               password: trimmedPassword,
               accountType: type.accountTypeApiValue,
@@ -173,7 +168,7 @@ class AuthSessionController extends Notifier<User?> {
             shopName: trimmedShop,
           );
         }
-        return _dioMessage(error);
+        return _registerApiMessage(error);
       } catch (_) {
         return 'Impossible de créer le compte.';
       }
@@ -310,6 +305,31 @@ class AuthSessionController extends Notifier<User?> {
     }
   }
 
+  /// API requires firstName and lastName of at least 2 characters.
+  /// A single given name is duplicated so "valal" still registers.
+  static ({String firstName, String lastName})? _registerNameParts(
+    String fullName,
+  ) {
+    final parts = fullName
+        .split(RegExp(r'\s+'))
+        .where((part) => part.isNotEmpty)
+        .toList();
+    if (parts.isEmpty || parts.first.length < 2) {
+      return null;
+    }
+
+    final firstName = parts.first;
+    if (parts.length == 1) {
+      return (firstName: firstName, lastName: firstName);
+    }
+
+    final lastName = parts.sublist(1).join(' ');
+    return (
+      firstName: firstName,
+      lastName: lastName.length >= 2 ? lastName : firstName,
+    );
+  }
+
   String _normalizedLocalPhone(String value) {
     final phoneDigits = value.trim().replaceAll(RegExp(r'\D'), '');
 
@@ -329,6 +349,29 @@ class AuthSessionController extends Notifier<User?> {
     String fallback = 'Impossible de créer le compte.',
   }) {
     return apiErrorMessage(error.response?.data, fallback: fallback);
+  }
+
+  String _registerApiMessage(DioException error) {
+    final payload = error.response?.data;
+    final details = asJsonMap(asJsonMap(payload)['details']);
+    final fieldErrors = details['fieldErrors'];
+    if (fieldErrors is Map && fieldErrors.isNotEmpty) {
+      final messages = <String>[];
+      for (final key in fieldErrors.keys) {
+        final french = frenchApiFieldError(key.toString());
+        if (french != null) {
+          messages.add(french);
+        }
+      }
+      if (messages.isNotEmpty) {
+        return messages.toSet().join('\n');
+      }
+    }
+    final message = _dioMessage(error);
+    if (message.trim().toLowerCase() == 'données invalides') {
+      return 'Vérifiez le nom, le téléphone, le mot de passe et le type de compte.';
+    }
+    return message;
   }
 
   Future<String?> requestPasswordReset({required String email}) async {
