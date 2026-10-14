@@ -10,6 +10,7 @@ import '../../../theme/heyn_theme.dart';
 import '../application/auth_navigation.dart';
 import '../application/auth_session_controller.dart';
 import 'auth_chrome.dart';
+import 'mauritanian_phone_formatter.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   const LoginScreen({super.key});
@@ -406,13 +407,20 @@ class _PhoneLoginField extends StatelessWidget {
                 controller: controller,
                 keyboardType: TextInputType.phone,
                 textInputAction: TextInputAction.next,
+                inputFormatters: const [MauritanianPhoneDigitsFormatter()],
                 style: _fieldStyle.copyWith(fontSize: 13),
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
+                  hintText: MauritanianPhoneDigitsFormatter.placeholder,
+                  hintStyle: _fieldStyle.copyWith(
+                    fontSize: 13,
+                    color: AppColors.mutedText,
+                    fontWeight: FontWeight.w500,
+                  ),
                   border: InputBorder.none,
                   enabledBorder: InputBorder.none,
                   focusedBorder: InputBorder.none,
                   isDense: true,
-                  contentPadding: EdgeInsets.symmetric(vertical: 14),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 14),
                 ),
               ),
             ),

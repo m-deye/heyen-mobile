@@ -95,7 +95,7 @@ void main() {
     required String password,
   }) async {
     await tester.enterText(textFieldByHint('Nom complet'), name);
-    await tester.enterText(textFieldByHint('+222 87654321'), phone);
+    await tester.enterText(find.byKey(const Key('auth-register-phone')), phone);
     await tester.enterText(textFieldByHint('Mot de passe'), password);
     await tester.enterText(
       textFieldByHint('Confirmer le mot de passe'),

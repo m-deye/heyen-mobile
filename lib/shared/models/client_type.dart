@@ -16,6 +16,12 @@ enum ClientType {
     };
   }
 
+  /// Value expected by POST /api/auth/register on the deployed Heyen API.
+  String get accountTypeApiValue => switch (this) {
+    ClientType.particulier => 'INDIVIDUAL',
+    ClientType.commercant => 'MERCHANT',
+  };
+
   String get apiValue => name;
 
   String get label => switch (this) {

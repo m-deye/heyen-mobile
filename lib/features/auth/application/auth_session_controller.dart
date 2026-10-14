@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/api/api_client.dart';
 import '../../../core/api/api_config.dart';
 import '../../../core/api/api_connection.dart';
+import '../../../core/api/api_json.dart';
 import '../../../core/api/api_unreachable.dart';
 import '../../../core/dev/dev_seed_data.dart';
 import '../../../shared/models/client_type.dart';
@@ -116,8 +117,14 @@ class AuthSessionController extends Notifier<User?> {
     final trimmedConfirm = confirmPassword.trim();
     final trimmedShop = shopName.trim();
 
-    if (name.length < 2) {
-      return 'Indiquez votre nom complet.';
+    final nameParts = name
+        .split(RegExp(r'\s+'))
+        .where((part) => part.isNotEmpty)
+        .toList();
+    if (nameParts.length < 2 ||
+        nameParts.first.length < 2 ||
+        nameParts.sublist(1).join(' ').length < 2) {
+      return 'Indiquez votre nom et prénom.';
     }
 
     if (localPhone.length != testPhone.length) {
@@ -138,26 +145,17 @@ class AuthSessionController extends Notifier<User?> {
         return 'Le mot de passe doit contenir au moins 8 caractères.';
       }
 
-      final parts = name.split(RegExp(r'\s+'));
-      final firstName = parts.first;
-      final lastName = parts.length > 1
-          ? parts.sublist(1).join(' ')
-          : firstName;
-      if (lastName.length < 2) {
-        return 'Indiquez votre nom et prénom.';
-      }
-
       try {
         final session =
             await AuthApi(
               ref.read(dioProvider),
               ref.read(authTokenStoreProvider),
             ).register(
-              firstName: firstName,
-              lastName: lastName,
-              email: '$localPhone@heyn.app',
+              firstName: nameParts.first,
+              lastName: nameParts.sublist(1).join(' '),
               phone: formattedPhone,
               password: trimmedPassword,
+              accountType: type.accountTypeApiValue,
             );
         state = _overlayDemoAccount(
           session.user.copyWith(type: type, shopName: trimmedShop),
@@ -330,11 +328,7 @@ class AuthSessionController extends Notifier<User?> {
     DioException error, {
     String fallback = 'Impossible de créer le compte.',
   }) {
-    final data = error.response?.data;
-    if (data is Map && data['message'] is String) {
-      return data['message'] as String;
-    }
-    return fallback;
+    return apiErrorMessage(error.response?.data, fallback: fallback);
   }
 
   Future<String?> requestPasswordReset({required String email}) async {

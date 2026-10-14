@@ -46,6 +46,34 @@ String apiErrorMessage(
   String fallback = 'Une erreur est survenue.',
 }) {
   final json = asJsonMap(payload);
+  final details = asJsonMap(json['details']);
+  final collected = <String>[];
+
+  void addMessages(Object? value) {
+    if (value is List) {
+      for (final item in value) {
+        final text = item.toString().trim();
+        if (text.isNotEmpty) {
+          collected.add(text);
+        }
+      }
+    } else if (value is String && value.trim().isNotEmpty) {
+      collected.add(value.trim());
+    }
+  }
+
+  addMessages(details['formErrors']);
+  final fieldErrors = details['fieldErrors'];
+  if (fieldErrors is Map) {
+    for (final value in fieldErrors.values) {
+      addMessages(value);
+    }
+  }
+
+  if (collected.isNotEmpty) {
+    return collected.toSet().join('\n');
+  }
+
   final message = json['message']?.toString().trim() ?? '';
   return message.isEmpty ? fallback : message;
 }

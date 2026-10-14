@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 import '../../../l10n/app_localizations.dart';
 import '../../../theme/heyn_colors.dart';
 import '../application/auth_session_controller.dart';
+import 'mauritanian_phone_formatter.dart';
 
 enum GuestAuthStep { phoneStep, passwordStep }
 
@@ -62,14 +62,19 @@ class _GuestAuthSheetState extends ConsumerState<GuestAuthSheet> {
   var _isLoading = false;
   String? _inlineError;
 
-  bool get _phoneComplete => _digitsOf(_phoneController.text).length == 8;
+  bool get _phoneComplete =>
+      MauritanianPhoneDigitsFormatter.digitsOf(_phoneController.text).length ==
+      MauritanianPhoneDigitsFormatter.localLength;
 
-  String get _localPhone => _digitsOf(_phoneController.text);
+  String get _localPhone =>
+      MauritanianPhoneDigitsFormatter.digitsOf(_phoneController.text);
 
   String get _formattedPhone {
-    final digits = _localPhone.padRight(8);
+    final digits = _localPhone.padRight(
+      MauritanianPhoneDigitsFormatter.localLength,
+    );
     final shown = _localPhone;
-    if (shown.length != 8) {
+    if (shown.length != MauritanianPhoneDigitsFormatter.localLength) {
       return '${AuthSessionController.countryPrefix} $shown';
     }
     return '${AuthSessionController.countryPrefix} ${digits.substring(0, 2)} '
@@ -94,20 +99,6 @@ class _GuestAuthSheetState extends ConsumerState<GuestAuthSheet> {
     _phoneFocus.dispose();
     _passwordFocus.dispose();
     super.dispose();
-  }
-
-  String _digitsOf(String value) {
-    var digits = value.replaceAll(RegExp(r'\D'), '');
-    const prefix = '222';
-    if (digits.startsWith(prefix) && digits.length >= prefix.length + 8) {
-      digits = digits.substring(digits.length - 8);
-    } else if (digits.startsWith(prefix) && digits.length > 8) {
-      digits = digits.substring(prefix.length);
-    }
-    if (digits.length > 8) {
-      digits = digits.substring(0, 8);
-    }
-    return digits;
   }
 
   void _goTo(GuestAuthStep step) {
@@ -442,7 +433,7 @@ class _PhoneStep extends StatelessWidget {
                   autofocus: true,
                   keyboardType: TextInputType.phone,
                   textInputAction: TextInputAction.done,
-                  inputFormatters: const [_PhoneDigitsFormatter()],
+                  inputFormatters: const [MauritanianPhoneDigitsFormatter()],
                   onChanged: onChanged,
                   onSubmitted: (_) => onContinue(),
                   style: GoogleFonts.inter(
@@ -452,7 +443,7 @@ class _PhoneStep extends StatelessWidget {
                     letterSpacing: 1.5,
                   ),
                   decoration: InputDecoration(
-                    hintText: '00 00 00 00',
+                    hintText: MauritanianPhoneDigitsFormatter.placeholder,
                     hintStyle: GoogleFonts.inter(
                       fontSize: 18,
                       fontWeight: FontWeight.w500,
@@ -758,26 +749,3 @@ class _SheetButton extends StatelessWidget {
   }
 }
 
-class _PhoneDigitsFormatter extends TextInputFormatter {
-  const _PhoneDigitsFormatter();
-
-  @override
-  TextEditingValue formatEditUpdate(
-    TextEditingValue oldValue,
-    TextEditingValue newValue,
-  ) {
-    var digits = newValue.text.replaceAll(RegExp(r'\D'), '');
-    if (digits.startsWith('222') && digits.length >= 11) {
-      digits = digits.substring(digits.length - 8);
-    } else if (digits.startsWith('222') && digits.length > 8) {
-      digits = digits.substring(3);
-    }
-    if (digits.length > 8) {
-      digits = digits.substring(0, 8);
-    }
-    return TextEditingValue(
-      text: digits,
-      selection: TextSelection.collapsed(offset: digits.length),
-    );
-  }
-}

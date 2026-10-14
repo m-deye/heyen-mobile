@@ -79,6 +79,7 @@ class User {
     final firstName = _readString(json, ['firstName', 'first_name']);
     final lastName = _readString(json, ['lastName', 'last_name']);
     final combinedName = '$firstName $lastName'.trim();
+    final accountType = _readString(json, ['accountType', 'account_type']);
     final role = _readString(json, [
       'role',
       'type',
@@ -91,7 +92,7 @@ class User {
       fullName: combinedName.isEmpty
           ? _readString(json, ['full_name', 'fullName', 'name'])
           : combinedName,
-      type: ClientType.fromApi(role),
+      type: ClientType.fromApi(accountType.isNotEmpty ? accountType : role),
       phone: _readString(json, ['phone']),
       whatsApp: _readString(json, ['whatsapp', 'whatsApp']),
       address: _readString(json, ['address']),

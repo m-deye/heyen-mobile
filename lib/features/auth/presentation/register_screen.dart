@@ -9,6 +9,7 @@ import '../../../theme/heyn_theme.dart';
 import '../application/auth_navigation.dart';
 import '../application/auth_session_controller.dart';
 import 'auth_chrome.dart';
+import 'mauritanian_phone_formatter.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
@@ -148,13 +149,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                             prefixIcon: Icons.person_outline,
                           ),
                           const SizedBox(height: 12),
-                          _GlassTextField(
-                            controller: _phoneController,
-                            hintText: '+222 87654321',
-                            keyboardType: TextInputType.phone,
-                            textInputAction: TextInputAction.next,
-                            prefixIcon: Icons.phone_outlined,
-                          ),
+                          _RegisterPhoneField(controller: _phoneController),
                           AnimatedSize(
                             duration: const Duration(milliseconds: 220),
                             curve: Curves.easeOutCubic,
@@ -242,6 +237,58 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
               ),
             ),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _RegisterPhoneField extends StatelessWidget {
+  const _RegisterPhoneField({required this.controller});
+
+  final TextEditingController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return Directionality(
+      textDirection: TextDirection.ltr,
+      child: AuthGlassField(
+        child: Row(
+          children: [
+            const SizedBox(width: 16),
+            const Icon(Icons.phone_outlined, color: HeynColors.goldDark),
+            const SizedBox(width: 8),
+            Text(
+              AuthSessionController.countryPrefix,
+              style: HeynTextStyles.bodyMedium.copyWith(
+                fontWeight: FontWeight.w800,
+                color: HeynColors.goldDark,
+              ),
+            ),
+            Container(
+              width: 1.2,
+              height: 22,
+              margin: const EdgeInsets.symmetric(horizontal: 12),
+              color: HeynColors.borderGold,
+            ),
+            Expanded(
+              child: TextField(
+                key: const Key('auth-register-phone'),
+                controller: controller,
+                keyboardType: TextInputType.phone,
+                textInputAction: TextInputAction.next,
+                inputFormatters: const [MauritanianPhoneDigitsFormatter()],
+                style: HeynTextStyles.bodyMedium.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+                decoration: authInputDecoration(
+                  hintText: MauritanianPhoneDigitsFormatter.placeholder,
+                ).copyWith(
+                  contentPadding: const EdgeInsets.symmetric(vertical: 16),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

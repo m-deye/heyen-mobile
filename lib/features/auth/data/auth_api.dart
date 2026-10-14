@@ -36,16 +36,16 @@ class AuthApi {
   Future<AuthSessionPayload> register({
     required String firstName,
     required String lastName,
-    required String email,
     required String phone,
     required String password,
+    required String accountType,
   }) {
     return _authenticate(ApiEndpoints.register, {
       'firstName': firstName,
       'lastName': lastName,
-      'email': email,
       'phone': phone,
       'password': password,
+      'accountType': accountType,
     });
   }
 
