@@ -28,4 +28,10 @@ class Category {
     }
     return apiId.isNotEmpty && apiId.trim().toLowerCase() == ref;
   }
+
+  /// Catalog / home filter: slug, Prisma CUID, or either alias on the product.
+  bool matchesProduct({required String categoryId, String categoryApiId = ''}) {
+    return matchesRef(categoryId) ||
+        (categoryApiId.isNotEmpty && matchesRef(categoryApiId));
+  }
 }

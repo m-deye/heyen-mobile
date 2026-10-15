@@ -17,18 +17,37 @@ Object? unwrapApiData(Object? payload) {
 }
 
 List<Map<String, Object?>> unwrapApiList(Object? payload) {
-  final data = unwrapApiData(payload);
-  final items = switch (data) {
-    {'items': final List<dynamic> nested} => nested,
-    {'results': final List<dynamic> results} => results,
-    final List<dynamic> list => list,
-    _ => const <dynamic>[],
-  };
+  var current = payload;
+  for (var depth = 0; depth < 4; depth++) {
+    final list = _asItemList(current);
+    if (list != null) {
+      return [
+        for (final item in list)
+          if (item is Map) Map<String, Object?>.from(item),
+      ];
+    }
+    if (current is Map && current.containsKey('data')) {
+      current = current['data'];
+      continue;
+    }
+    break;
+  }
+  return const [];
+}
 
-  return [
-    for (final item in items)
-      if (item is Map) Map<String, Object?>.from(item),
-  ];
+List<dynamic>? _asItemList(Object? value) {
+  if (value is List) {
+    return value;
+  }
+  if (value is Map) {
+    for (final key in ['items', 'results', 'products']) {
+      final nested = value[key];
+      if (nested is List) {
+        return nested;
+      }
+    }
+  }
+  return null;
 }
 
 String readApiString(Map<String, Object?> json, List<String> keys) {

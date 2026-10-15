@@ -1,3 +1,4 @@
+import 'category.dart';
 import 'client_type.dart';
 import 'sale_mode.dart';
 
@@ -11,6 +12,7 @@ class Product {
     required this.details,
     required this.status,
     this.apiId = '',
+    this.categoryApiId = '',
     this.discountPercent = 0,
     this.imageLabel = '',
     this.saleMode = SaleMode.unit,
@@ -23,7 +25,12 @@ class Product {
 
   /// UUID Heyen, utilise pour le panier API. [id] reste le slug pour les routes.
   final String apiId;
+
+  /// Route / filter key: nested `category.slug` when the API sends it.
   final String categoryId;
+
+  /// Prisma CUID of the category, when the payload includes both id and slug.
+  final String categoryApiId;
   final String name;
   final double price;
   final String description;
@@ -101,6 +108,7 @@ class Product {
       id: slug.isNotEmpty ? slug : uuid,
       apiId: uuid,
       categoryId: _readCategoryId(json),
+      categoryApiId: _readCategoryApiId(json),
       name: _readString(json, ['name', 'title', 'product_name', 'productName']),
       price: _readDouble(json, ['price', 'unit_price', 'unitPrice']),
       description: _readString(json, ['description']),
@@ -139,11 +147,19 @@ class Product {
     };
   }
 
+  bool belongsToCategory(Category category) {
+    return category.matchesProduct(
+      categoryId: categoryId,
+      categoryApiId: categoryApiId,
+    );
+  }
+
   Product copyWith({int? stock, String? status}) {
     return Product(
       id: id,
       apiId: apiId,
       categoryId: categoryId,
+      categoryApiId: categoryApiId,
       name: name,
       price: price,
       description: description,
@@ -159,21 +175,47 @@ class Product {
   }
 
   static String _readCategoryId(Map<String, Object?> json) {
-    final category = json['category'];
-    if (category is Map) {
-      final nested = _readString(Map<String, Object?>.from(category), [
+    final nested = _nestedCategoryMap(json);
+    if (nested != null) {
+      final slug = _readString(nested, [
         'slug',
-        'id',
+        'categorySlug',
+        'category_slug',
       ]);
-      if (nested.isNotEmpty) {
-        return nested;
+      if (slug.isNotEmpty) {
+        return slug;
       }
     }
     final slug = _readString(json, ['categorySlug', 'category_slug']);
     if (slug.isNotEmpty) {
       return slug;
     }
-    return _readString(json, ['category_id', 'categoryId', 'category']);
+    if (nested != null) {
+      final nestedId = _readString(nested, ['id']);
+      if (nestedId.isNotEmpty) {
+        return nestedId;
+      }
+    }
+    return _readString(json, ['category_id', 'categoryId']);
+  }
+
+  static String _readCategoryApiId(Map<String, Object?> json) {
+    final nested = _nestedCategoryMap(json);
+    if (nested != null) {
+      final nestedId = _readString(nested, ['id']);
+      if (nestedId.isNotEmpty) {
+        return nestedId;
+      }
+    }
+    return _readString(json, ['category_id', 'categoryId']);
+  }
+
+  static Map<String, Object?>? _nestedCategoryMap(Map<String, Object?> json) {
+    final category = json['category'];
+    if (category is Map) {
+      return Map<String, Object?>.from(category);
+    }
+    return null;
   }
 
   static String _readString(Map<String, Object?> json, List<String> keys) {

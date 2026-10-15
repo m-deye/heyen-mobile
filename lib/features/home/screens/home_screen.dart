@@ -102,54 +102,54 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
             ),
             if (!searching)
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
-                child: _PromoBannerCarousel(
-                  banners: [
-                    (
-                      title: l10n.homeBannerEssentialsTitle,
-                      subtitle: l10n.homeBannerSubtitle,
-                      cta: l10n.homeBannerCta,
-                    ),
-                    (
-                      title: l10n.homeBannerWholesaleTitle,
-                      subtitle: l10n.homeBannerSubtitle,
-                      cta: l10n.homeBannerCta,
-                    ),
-                    (
-                      title: l10n.homeBannerDeliveryTitle,
-                      subtitle: l10n.homeBannerSubtitle,
-                      cta: l10n.homeBannerCta,
-                    ),
-                  ],
-                  index: _bannerIndex,
-                  onPageChanged: (value) =>
-                      setState(() => _bannerIndex = value),
-                  onCta: () => context.go('/catalog'),
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+                  child: _PromoBannerCarousel(
+                    banners: [
+                      (
+                        title: l10n.homeBannerEssentialsTitle,
+                        subtitle: l10n.homeBannerSubtitle,
+                        cta: l10n.homeBannerCta,
+                      ),
+                      (
+                        title: l10n.homeBannerWholesaleTitle,
+                        subtitle: l10n.homeBannerSubtitle,
+                        cta: l10n.homeBannerCta,
+                      ),
+                      (
+                        title: l10n.homeBannerDeliveryTitle,
+                        subtitle: l10n.homeBannerSubtitle,
+                        cta: l10n.homeBannerCta,
+                      ),
+                    ],
+                    index: _bannerIndex,
+                    onPageChanged: (value) =>
+                        setState(() => _bannerIndex = value),
+                    onCta: () => context.go('/catalog'),
+                  ),
                 ),
               ),
-            ),
             if (!searching)
-            SliverToBoxAdapter(
-              child: Padding(
-                padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
-                child: _CategoriesBlock(
-                  categories: categories,
-                  selectedCategoryId: _selectedCategoryId,
-                  onSelected: (id) {
-                    if (id == null) {
-                      setState(() => _selectedCategoryId = null);
-                      return;
-                    }
-                    context.go(
-                      '/catalog?category=${Uri.encodeQueryComponent(id)}',
-                    );
-                  },
-                  onSeeAll: _openCatalog,
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 18, 20, 0),
+                  child: _CategoriesBlock(
+                    categories: categories,
+                    selectedCategoryId: _selectedCategoryId,
+                    onSelected: (id) {
+                      if (id == null) {
+                        setState(() => _selectedCategoryId = null);
+                        return;
+                      }
+                      context.go(
+                        '/catalog?category=${Uri.encodeQueryComponent(id)}',
+                      );
+                    },
+                    onSeeAll: _openCatalog,
+                  ),
                 ),
               ),
-            ),
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(20, 18, 8, 4),
@@ -168,16 +168,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                     ),
                     if (!searching)
-                    TextButton(
-                      onPressed: _openCatalog,
-                      child: Text(
-                        l10n.commonSeeAll,
-                        style: HeynTextStyles.caption.copyWith(
-                          color: AppColors.darkText,
-                          fontWeight: FontWeight.w700,
+                      TextButton(
+                        onPressed: _openCatalog,
+                        child: Text(
+                          l10n.commonSeeAll,
+                          style: HeynTextStyles.caption.copyWith(
+                            color: AppColors.darkText,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
-                    ),
                   ],
                 ),
               ),
@@ -864,7 +864,8 @@ class _CategoriesBlock extends StatelessWidget {
                     key: ValueKey('home-category-${category.id}'),
                     category: category,
                     label: localizedCategoryLabel(category, l10n),
-                    selected: selectedCategoryId != null &&
+                    selected:
+                        selectedCategoryId != null &&
                         category.matchesRef(selectedCategoryId!),
                     index: i,
                     onTap: () => onSelected(category.id),
@@ -1075,7 +1076,10 @@ List<Product> _filterHomeProducts({
   return [
     for (final product in items)
       if ((selectedCategoryId == null ||
-              (selected?.matchesRef(product.categoryId) ??
+              (selected?.matchesProduct(
+                    categoryId: product.categoryId,
+                    categoryApiId: product.categoryApiId,
+                  ) ??
                   product.categoryId == selectedCategoryId)) &&
           (needle.isEmpty || _productMatchesQuery(product, needle)))
         product,

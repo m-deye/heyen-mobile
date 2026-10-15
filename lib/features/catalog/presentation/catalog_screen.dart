@@ -87,7 +87,7 @@ class _CatalogScreenState extends ConsumerState<CatalogScreen> {
     final products = _applyFilter(
       allProducts.where((product) {
         final inCategory =
-            !showingCategory || selectedCategory.matchesRef(product.categoryId);
+            !showingCategory || product.belongsToCategory(selectedCategory);
         if (!inCategory) {
           return false;
         }
@@ -741,7 +741,8 @@ class _CategoryChips extends StatelessWidget {
           final category = categories[index - 1];
           return _CategoryChip(
             label: localizedCategoryLabel(category, l10n),
-            selected: selectedCategoryId != null &&
+            selected:
+                selectedCategoryId != null &&
                 category.matchesRef(selectedCategoryId!),
             onTap: () => onCategoryTap(category),
           );
