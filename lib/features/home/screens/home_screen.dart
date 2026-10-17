@@ -91,12 +91,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       .length,
                   onSearchChanged: (_) => setState(() {}),
                   onSearchSubmitted: (_) {},
-                  onAvatarTap: () => requireAuthThen(
-                    context: context,
-                    ref: ref,
-                    redirect: '/profile',
-                    onAuthorized: () => context.go('/profile'),
-                  ),
+                  onFilterTap: _openCatalog,
                   onNotifyTap: () => openNotifications(context, ref),
                 ),
               ),
@@ -338,7 +333,7 @@ class _HomeHeader extends StatelessWidget {
     required this.notificationCount,
     required this.onSearchChanged,
     required this.onSearchSubmitted,
-    required this.onAvatarTap,
+    required this.onFilterTap,
     required this.onNotifyTap,
   });
 
@@ -346,7 +341,7 @@ class _HomeHeader extends StatelessWidget {
   final int notificationCount;
   final ValueChanged<String> onSearchChanged;
   final ValueChanged<String> onSearchSubmitted;
-  final VoidCallback onAvatarTap;
+  final VoidCallback onFilterTap;
   final VoidCallback onNotifyTap;
 
   @override
@@ -376,7 +371,7 @@ class _HomeHeader extends StatelessWidget {
           textDirection: TextDirection.ltr,
           child: Row(
             children: [
-              _HomeFilterButton(onTap: onAvatarTap),
+              _HomeFilterButton(onTap: onFilterTap),
               const SizedBox(width: 12),
               Expanded(
                 child: _HomeSearchBar(
